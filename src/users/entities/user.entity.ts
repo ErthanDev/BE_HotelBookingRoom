@@ -18,6 +18,6 @@ export class User {
     address: string;
     @Column({type:"enum",enum:UserRole,default:UserRole.Customer})
     role:UserRole;
-    @Column({nullable: true,})
+    @Column({nullable: true,type:"text"})
     refreshToken:string;
 }

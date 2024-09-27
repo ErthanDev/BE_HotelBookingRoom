@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { RegisterUserDto } from 'src/auth/dto/register-auth.dto';
 @Injectable()
 export class UsersService {
   constructor(
@@ -33,30 +34,30 @@ export class UsersService {
 
   async findAll(qs: any) {
     const take = +qs.limit || 10
-    const skip = (+qs.currentPage - 1) * (+qs.limit)||0
+    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0
     const keyword = qs.keyword || ''
     const defaultLimit = +qs.limit ? +qs.limit : 10
-    const totalItems = await this.usersRepository.count({ 
-      where: { name: Like('%' + keyword + '%') } 
+    const totalItems = await this.usersRepository.count({
+      where: { name: Like('%' + keyword + '%') }
     });
 
     const totalPages = Math.ceil(totalItems / defaultLimit);
-    
+
     const [result, total] = await this.usersRepository.findAndCount(
       {
-        take: take||totalItems,
+        take: take || totalItems,
         skip: skip
       }
     );
 
     return {
       meta: {
-        current: +qs.currentPage||1, 
-        pageSize: +qs.limit,  
-        pages: totalPages , 
-        total: total 
+        current: +qs.currentPage || 1,
+        pageSize: +qs.limit,
+        pages: totalPages,
+        total: total
       },
-      result 
+      result
     }
 
   }
@@ -73,6 +74,23 @@ export class UsersService {
     return user;
   }
 
+  async register(createUserDto: RegisterUserDto) {
+    const hash = await bcrypt.hash(createUserDto.password, 10);
+
+    const newUser = this.usersRepository.create({
+      name: createUserDto.name,
+      email: createUserDto.email,
+      password: hash,
+      phoneNumber: createUserDto.phoneNumber,
+      address: createUserDto.address,
+    });
+
+    const savedUser = await this.usersRepository.save(newUser);
+
+    const { password, ...result } = savedUser;
+    return result;
+  }
+
   async findOneByEmail(email: string) {
     const user = await this.usersRepository.findOne({
       where: { email },
@@ -84,11 +102,31 @@ export class UsersService {
     }
     return user;
   }
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+
+  updateUserToken = async ( id: string, refreshToken: string,) => {
+    return await this.usersRepository.update(id, { refreshToken })
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  findUserByRefreshToken = async (refreshToken: string) => {
+    return await this.usersRepository.findOne({  where: { refreshToken } })
   }
+  async checkUserExists(email: string) {
+    const user = await this.usersRepository.findOne({
+      where: { email },
+    });
+
+    // Nếu không tìm thấy user, trả về lỗi 404
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
+
+  // update(id: number, updateUserDto: UpdateUserDto) {
+  //   return `This action updates a #${id} user`;
+  // }
+
+  // remove(id: number) {
+  //   return `This action removes a #${id} user`;
+  // }
 }

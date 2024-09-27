@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ResponseMessage, User } from 'src/decorators/customize';
+import { Public, ResponseMessage, User } from 'src/decorators/customize';
 import { IUser } from 'src/users/user.interface';
+import { RegisterUserDto } from './dto/register-auth.dto';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -10,8 +12,48 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @ResponseMessage('Login successful')
   @Post('login')
-  async login(@User() user:IUser) {
+  @Public()
+  async login(
+    @User() user: IUser,
+    @Res({ passthrough: true }) response: Response
+  ) {
+    return this.authService.handleLogin(user, response);
+  }
+
+  @ResponseMessage('Register successful')
+  @Post('register')
+  @Public()
+  async register(@Body() user: RegisterUserDto) {
+    return this.authService.handleRegister(user);
+  }
+
+  @ResponseMessage('Get user profile')
+  @Get('profile')
+  async getProfile(@User() user: IUser,) {
     return user;
+  }
+
+  @ResponseMessage('Get user refresh token')
+  @Get('refresh')
+  @Public()
+  async handleRefreshToken(@Req() req: Request, @Res({ passthrough: true }) response: Response) {
+    const refresh_token = req.cookies['refresh_token'];
+    return this.authService.handleRefreshToken(refresh_token, response);
+  }
+
+  @Get("/facebook")
+  @UseGuards(AuthGuard("facebook"))
+  @Public()
+  async facebookLogin(): Promise<any> {
+    return HttpStatus.OK;
+  }
+
+  @Get("/facebook/redirect")
+  @ResponseMessage('Facebook login successful')
+  @Public()
+  @UseGuards(AuthGuard("facebook"))
+  async facebookLoginRedirect(@User() user: IUser, @Res({ passthrough: true }) response: Response) {
+    return this.authService.handleFacebookLogin(user, response);
   }
 
 }
