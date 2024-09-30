@@ -6,6 +6,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { TypeRoomModule } from './type-room/type-room.module';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -24,10 +27,17 @@ import { AuthModule } from './auth/auth.module';
         password: configService.get<string>('DB_PASS'),
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/../**/*.entity.js'] ,
-        synchronize: false,
+        synchronize: true,
+        autoLoadEntities: true,
       }),
       inject: [ConfigService],
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
+    TypeRoomModule,
+    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],

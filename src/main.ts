@@ -7,13 +7,15 @@ import * as cookieParser from 'cookie-parser';
 import { TransformInterceptor } from './core/transform.interceptor';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { RolesGuard } from './auth/guard/roles.guard';
-
+import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
   );
   const reflector = app.get(Reflector);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+  }));
   app.useGlobalInterceptors(new TransformInterceptor(reflector)); 
   app.useGlobalGuards(new JwtAuthGuard(reflector));
   app.useGlobalGuards(new RolesGuard(reflector));
@@ -23,6 +25,7 @@ async function bootstrap() {
     type: VersioningType.URI
   });
   app.use(cookieParser());
+  app.use(helmet());
   app.enableCors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',

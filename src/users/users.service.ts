@@ -49,7 +49,7 @@ export class UsersService {
         skip: skip
       }
     );
-
+    const data = result.map(({ password,refreshToken, ...rest }) => rest);
     return {
       meta: {
         current: +qs.currentPage || 1,
@@ -57,7 +57,7 @@ export class UsersService {
         pages: totalPages,
         total: total
       },
-      result
+      ressult: data
     }
 
   }
@@ -122,11 +122,11 @@ export class UsersService {
     return user;
   }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
+  update(id: string, updateUserDto: UpdateUserDto) {
+    return this.usersRepository.update(id, updateUserDto);
+  }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+  remove(id: string) {
+    return this.usersRepository.delete(id);
+  }
 }

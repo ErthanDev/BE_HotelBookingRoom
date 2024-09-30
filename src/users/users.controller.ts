@@ -7,7 +7,7 @@ import { UserRole } from 'src/enum/userRole.enum';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   @Roles(UserRole.Staff)
@@ -18,27 +18,31 @@ export class UsersController {
 
   @Get()
   @ResponseMessage('All users fetched successfully')
+  @Roles(UserRole.Staff)
   findAll(
-    @Query() qs:any
+    @Query() qs: any
   ) {
     return this.usersService.findAll(qs);
   }
 
   @Get(':id')
   @ResponseMessage('User fetched successfully')
+  @Roles(UserRole.Staff)
   findOne(@Param('id') id: string) {
 
     return this.usersService.findOne(id);
   }
 
-  // @Patch(':id')
-  // @ResponseMessage('User updated successfully')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
-  // }
+  @Patch(':id')
+  @ResponseMessage('User updated successfully')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.usersService.remove(+id);
-  // }
+  @Delete(':id')
+  @ResponseMessage('User deleted successfully')
+  @Roles(UserRole.Staff)
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
+  }
 }
