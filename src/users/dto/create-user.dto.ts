@@ -14,6 +14,8 @@ export class CreateUserDto {
     @IsNotEmpty()
     address: string;
     @IsNotEmpty()
+    gender: boolean;
+    @IsNotEmpty()
     role: UserRole;
 }
 

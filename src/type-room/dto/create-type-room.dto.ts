@@ -7,6 +7,9 @@ export class CreateTypeRoomDto {
     name: string;
 
     @IsNotEmpty()
+    description: string;
+
+    @IsNotEmpty()
     introduction: string;
 
     @IsNotEmpty()

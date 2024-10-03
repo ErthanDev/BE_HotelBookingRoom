@@ -15,6 +15,8 @@ export class User {
     @Column({length:10})
     phoneNumber: string;
     @Column()
+    gender: boolean;
+    @Column()
     address: string;
     @Column({type:"enum",enum:UserRole,default:UserRole.Customer})
     role:UserRole;

@@ -11,6 +11,9 @@ export class TypeRoom {
     name: string;
 
     @Column({type:"text"})
+    description: string;
+
+    @Column({type:"text"})
     introduction: string;
 
     @Column({type:"text"})
