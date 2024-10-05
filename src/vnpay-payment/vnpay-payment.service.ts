@@ -27,8 +27,8 @@ export class VnpayPaymentService {
           req.socket.remoteAddress ||
           req.ip,
       vnp_TxnRef:`${moment().format('YYMMDD')}_${transID}` ,
-      vnp_OrderInfo: `Payment for booking room`,
-      vnp_ReturnUrl: `${this.configService.get<string>('VNPAY_RETURN_URL')}?bookingId=${bookingId}`,
+      vnp_OrderInfo: `Payment for booking room, bookingId: ${bookingId}`,
+      vnp_ReturnUrl: `${this.configService.get<string>('VNPAY_RETURN_URL')}`,
       vnp_Locale: VnpLocale.VN,
     });
 
@@ -51,7 +51,10 @@ export class VnpayPaymentService {
     } catch (error) {
         return {message: 'Payment failed'};
     }
-    const paymentDto = new CreatePaymentDto(+verify.vnp_Amount, PaymentMethod.Vnpay,"123", verify.vnp_TxnRef);
+    const orderInfo = verify.vnp_OrderInfo;
+    const bookingId = orderInfo.split('bookingId: ')[1];
+    const paymentDto = new CreatePaymentDto(+verify.vnp_Amount, PaymentMethod.Vnpay,bookingId, verify.vnp_TxnRef);
+    console.log("Dto"+paymentDto.bookingId);
     const newPayment = await this.paymentService.createPayment(paymentDto);
     return {payment: newPayment};
   }

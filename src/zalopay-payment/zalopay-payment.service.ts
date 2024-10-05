@@ -25,6 +25,7 @@ export class ZalopayPaymentService {
   
     const embed_data = {
       redirecturl: this.configService.get<string>('ZALOPAY_REDIRECT_URL'),
+      bookingId: req.body.bookingId,
     };
 
     const items = [{}];
@@ -86,7 +87,11 @@ export class ZalopayPaymentService {
       // thanh toán thành công
       // merchant cập nhật trạng thái cho đơn hàng
       let dataJson = JSON.parse(dataStr);
-      const paymentDto = new CreatePaymentDto(+dataJson['amount'] , PaymentMethod.ZaloPay,"123",dataJson['app_trans_id']);
+      const embedDataJson = JSON.parse(dataJson['embed_data']);
+      const bookingId = embedDataJson['bookingId'];
+      const paymentDto = new CreatePaymentDto(+dataJson['amount'] , PaymentMethod.ZaloPay,bookingId,dataJson['app_trans_id']);
+      console.log("Dto"+paymentDto.bookingId);
+
       const newPayment = await this.paymentService.createPayment(paymentDto);
       result.payment = JSON.stringify(newPayment);
       result.return_code = 1;
