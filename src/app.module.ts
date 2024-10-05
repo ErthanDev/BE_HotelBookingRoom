@@ -11,6 +11,9 @@ import { TypeRoomModule } from './type-room/type-room.module';
 import { RoomModule } from './room/room.module';
 import { MailModule } from './mail/mail.module';
 import { PaymentModule } from './payment/payment.module';
+import { SurchargeModule } from './surcharge/surcharge.module';
+import { VnpayPaymentModule } from './vnpay-payment/vnpay-payment.module';
+import { ZalopayPaymentModule } from './zalopay-payment/zalopay-payment.module';
 
 @Module({
   imports: [
@@ -42,6 +45,9 @@ import { PaymentModule } from './payment/payment.module';
     RoomModule,
     MailModule,
     PaymentModule,
+    SurchargeModule,
+    VnpayPaymentModule,
+    ZalopayPaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,17 +9,5 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) { }
 
 
-  @Post('vnpay')
-  @ResponseMessage('Create vnpay payment url success')
-  @Public()
-  async buildPaymentUrl(@Req() req) {
-    return this.paymentService.buildPaymentUrl(req);
-  }
-
-  @Get('vnpay-return')
-  @ResponseMessage('Create vnpay payment success')
-  @Public()
-  async handleVnpayReturn(@Req() req:any) {
-    return this.paymentService.handleVnpayReturn(req);
-  }
+ 
 }

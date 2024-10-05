@@ -12,19 +12,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         envFilePath: '.env',
     }),
     TypeOrmModule.forFeature([Payment]),
-    VnpayModule.registerAsync({
-        imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) => ({
-            secureSecret: configService.getOrThrow<string>('VNPAY_HASHSECRET'),
-            tmnCode: configService.getOrThrow<string>('VNPAY_TMNCODE'),
-            vnpayHost: configService.getOrThrow<string>('VNPAY_HOST'),
-            testMode: true,
-            enableLog: true, 
-        }),
-        inject: [ConfigService],
-    }),
+   
 ],
   controllers: [PaymentController],
   providers: [PaymentService],
+  exports: [PaymentService],
 })
 export class PaymentModule {}
