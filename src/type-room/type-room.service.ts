@@ -59,10 +59,10 @@ export class TypeRoomService {
   }
 
   update(id: string, updateTypeRoomDto: UpdateTypeRoomDto) {
-    return `This action updates a #${id} typeRoom`;
+    return this.typeRoomRepository.update(id, updateTypeRoomDto);
   }
 
   remove(id: string) {
-    return `This action removes a #${id} typeRoom`;
+    return this.typeRoomRepository.delete(id);
   }
 }

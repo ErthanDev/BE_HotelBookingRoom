@@ -36,6 +36,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
         password: "123456",
         phoneNumber: "",
         address: "",
+        gender: true
       });
       return done(null, newUser);
     }

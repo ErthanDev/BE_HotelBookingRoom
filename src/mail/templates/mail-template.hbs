@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="font-family: Arial, sans-serif;margin: 0;padding: 0;background-color: #f4f4f4; color: black">
+    <div class="paper"
+        style="max-width: 600px;width: 100%;margin: 20px auto;padding: 20px;background-color: #fff;border: 1px solid #ddd;box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+        <div class="header" style="width: 100%;text-align: center;margin-bottom: 20px;background-color: #2f251d;">
+            <img src="https://firebasestorage.googleapis.com/v0/b/hotelbookingroom-fdf46.appspot.com/o/logo-tachnen.png?alt=media&token=a012fb81-9b75-4064-971b-381f60dafcd6"
+                style="width: 200px;max-width: 100%;">
+        </div>
+
+        <div class="content" style="padding: 20px;">
+            <h1
+                style="font-size: 24px;margin-bottom: 20px;font-family: 'Times New Roman', Times, serif;text-align: center;">
+                ĐẶT PHÒNG THÀNH CÔNG</h1>
+            <p class="normal-text" style="font-size: 14px;line-height: 1.6;">Kính gửi ông/bà {{nameCustomer}},</p>
+            <p class="normal-text" style="font-size: 14px;line-height: 1.6;">Chúng tôi xin chân thành cảm ơn quý khách
+                đã đặt phòng tại The Élégance. Đặt phòng của quý khách đã được xác nhận thành công.</p>
+            <h2 style="font-size: 18px;margin-top: 30px;margin-bottom: 20px;">Chi tiết đặt phòng</h2>
+
+            <table style="width: 100%;border-collapse: collapse;margin: 20px 0;">
+                <tr>
+                    <td style="padding-bottom: 10px;font-size: 14px;font-weight: bold;">Tên khách hàng</td>
+                    <td style="padding-bottom: 10px;font-size: 14px;">{{nameCustomer}}</td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom: 10px;font-size: 14px;font-weight: bold;">Thời gian nhận phòng</td>
+                    <td style="padding-bottom: 10px;font-size: 14px;">{{startTime}}</td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom: 10px;font-size: 14px;font-weight: bold;">Thời gian trả phòng</td>
+                    <td style="padding-bottom: 10px;font-size: 14px;">{{endTime}}</td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom: 10px;font-size: 14px;font-weight: bold;">Đặt phòng theo</td>
+                    <td style="padding-bottom: 10px;font-size: 14px;">{{typeBooking}}</td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom: 10px;font-size: 14px;font-weight: bold;">Số khách</td>
+                    <td style="padding-bottom: 10px;font-size: 14px;">{{numberOfPerson}}</td>
+                </tr>
+            </table>
+
+            <div class="total" style="margin-top: 20px;font-weight: bold;font-size: 16px;overflow: hidden;">
+                <p style="float: left;">Tổng giá</p>
+                <p style="float: right;">{{totalPrice}}</p>
+            </div>
+
+            <p class="normal-text" style="font-size: 14px;line-height: 1.6;margin-top: 20px;">Nếu quý khách có bất kỳ
+                yêu cầu đặc biệt nào, xin liên hệ với chúng tôi qua email này hoặc gọi 0123 456 789. The Élégance luôn
+                sẵn sàng phục vụ quý khách.</p>
+            <div class="signature" style="margin-top: 30px;text-align: right;font-weight: bold;">
+                <p>Trân trọng,</p>
+                <p>The Élégance</p>
+            </div>
+        </div>
+
+        <div class="footer"
+            style="margin-top: 20px;text-align: center;padding: 10px;background-color: black;color: white;font-size: 12px;">
+            <img src="https://firebasestorage.googleapis.com/v0/b/hotelbookingroom-fdf46.appspot.com/o/logo-tachnen.png?alt=media&token=a012fb81-9b75-4064-971b-381f60dafcd6"
+                style="max-width: 100px;margin-bottom: 10px;">
+            <div class="information" style="text-align: center;">
+                <p>(01)23456789</p>
+                <p>02 Võ Oanh, Bình Thạnh, TPHCM</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

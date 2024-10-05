@@ -8,6 +8,7 @@ import { TransformInterceptor } from './core/transform.interceptor';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { RolesGuard } from './auth/guard/roles.guard';
 import helmet from 'helmet';
+import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
@@ -19,6 +20,9 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor(reflector)); 
   app.useGlobalGuards(new JwtAuthGuard(reflector));
   app.useGlobalGuards(new RolesGuard(reflector));
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('hbs');
   app.setGlobalPrefix('/api/');
   app.enableVersioning({
     defaultVersion: '1',

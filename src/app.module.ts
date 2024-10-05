@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeRoomModule } from './type-room/type-room.module';
 import { RoomModule } from './room/room.module';
+import { MailModule } from './mail/mail.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { RoomModule } from './room/room.module';
     }]),
     TypeRoomModule,
     RoomModule,
+    MailModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
