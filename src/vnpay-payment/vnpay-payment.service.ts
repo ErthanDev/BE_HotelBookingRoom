@@ -1,6 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { CreateVnpayPaymentDto } from './dto/create-vnpay-payment.dto';
-import { UpdateVnpayPaymentDto } from './dto/update-vnpay-payment.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { VnpayService } from 'nestjs-vnpay';
 import { VerifyReturnUrl, VnpLocale } from 'vnpay';
@@ -39,17 +37,16 @@ export class VnpayPaymentService {
   async handleVnpayReturn(req:any) {
     let verify: VerifyReturnUrl;
     try {
-        
         verify = await this.vnpayService.verifyReturnUrl(req.query);
         if (!verify.isVerified) {
-            return {message: 'Data integrity verification failed'};
+            throw new BadRequestException('Data integrity verification failed');
         }
         if (!verify.isSuccess) {
           
-            return {message: 'Payment failed'};
+            throw new BadRequestException('Payment failed');
         }
     } catch (error) {
-        return {message: 'Payment failed'};
+      throw new BadRequestException('Payment failed');
     }
     const orderInfo = verify.vnp_OrderInfo;
     const bookingId = orderInfo.split('bookingId: ')[1];

@@ -19,11 +19,8 @@ export class CreateTypeRoomDto {
     sizeRoom: number;
 
     @IsNotEmpty()
-    beds: number;
-
-    @IsNotEmpty()
-    minPeople: number;
-
+    beds: string;
+    
     @IsNotEmpty()
     maxPeople: number;
 

@@ -1,6 +1,7 @@
+import { Booking } from "src/booking/entities/booking.entity";
 import { PaymentMethod } from "src/enum/paymentMethod.enum";
 import { PaymentStatus } from "src/enum/paymentStatus.enum";
-import { Column, Entity, Generated, PrimaryColumn } from "typeorm";
+import { Column, Entity, Generated, ManyToMany, ManyToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Payment {
@@ -18,4 +19,7 @@ export class Payment {
 
     @Column({type:"enum", enum: PaymentMethod})
     paymentMethod: PaymentMethod;
+
+    @ManyToOne(()=> Booking, booking => booking.payments)
+    booking: Booking;
 }

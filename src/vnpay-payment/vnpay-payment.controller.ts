@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { VnpayPaymentService } from './vnpay-payment.service';
-import { CreateVnpayPaymentDto } from './dto/create-vnpay-payment.dto';
-import { UpdateVnpayPaymentDto } from './dto/update-vnpay-payment.dto';
 import { Public, ResponseMessage } from 'src/decorators/customize';
 
 @Controller('vnpay')

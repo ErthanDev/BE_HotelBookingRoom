@@ -1,6 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { CreateZalopayPaymentDto } from './dto/create-zalopay-payment.dto';
-import { UpdateZalopayPaymentDto } from './dto/update-zalopay-payment.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as moment from "moment";
 import axios from 'axios';
 import * as crypto from 'crypto';
@@ -81,7 +79,7 @@ export class ZalopayPaymentService {
       // callback không hợp lệ
       result.return_code = -1;
       result.return_message = "mac not equal";
-      return result;
+      throw new BadRequestException("mac not equal");
     }
     else {
       // thanh toán thành công
@@ -90,7 +88,6 @@ export class ZalopayPaymentService {
       const embedDataJson = JSON.parse(dataJson['embed_data']);
       const bookingId = embedDataJson['bookingId'];
       const paymentDto = new CreatePaymentDto(+dataJson['amount'] , PaymentMethod.ZaloPay,bookingId,dataJson['app_trans_id']);
-      console.log("Dto"+paymentDto.bookingId);
 
       const newPayment = await this.paymentService.createPayment(paymentDto);
       result.payment = JSON.stringify(newPayment);

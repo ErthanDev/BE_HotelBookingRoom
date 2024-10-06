@@ -1,5 +1,6 @@
+import { Booking } from "src/booking/entities/booking.entity";
 import { UserRole } from "src/enum/userRole.enum";
-import { Column, Entity, Generated, PrimaryColumn, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, Generated, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
 export class User {
@@ -22,4 +23,7 @@ export class User {
     role:UserRole;
     @Column({nullable: true,type:"text"})
     refreshToken:string;
+
+    @OneToMany(()=>Booking, booking => booking.user)
+    bookings: Booking[];
 }

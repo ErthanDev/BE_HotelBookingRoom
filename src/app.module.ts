@@ -14,6 +14,11 @@ import { PaymentModule } from './payment/payment.module';
 import { SurchargeModule } from './surcharge/surcharge.module';
 import { VnpayPaymentModule } from './vnpay-payment/vnpay-payment.module';
 import { ZalopayPaymentModule } from './zalopay-payment/zalopay-payment.module';
+import { BookingModule } from './booking/booking.module';
+import { DiscountModule } from './discount/discount.module';
+
+import { UtilityModule } from './utility/utility.module';
+
 
 @Module({
   imports: [
@@ -48,6 +53,9 @@ import { ZalopayPaymentModule } from './zalopay-payment/zalopay-payment.module';
     SurchargeModule,
     VnpayPaymentModule,
     ZalopayPaymentModule,
+    BookingModule,
+    DiscountModule,
+    UtilityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

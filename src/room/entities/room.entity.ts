@@ -1,6 +1,6 @@
-import { RoomStatus } from "src/enum/roomStatus.enum";
+import { Booking } from "src/booking/entities/booking.entity";
 import { TypeRoom } from "src/type-room/entities/type-room.entity";
-import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Room {
@@ -13,9 +13,6 @@ export class Room {
     @Column()
     pricePerHour: number;
 
-    @Column({ type: 'enum', enum: RoomStatus, default: RoomStatus.Available })
-    status: RoomStatus;
-
     @Column()
     interior: string;
 
@@ -27,4 +24,7 @@ export class Room {
 
     @ManyToOne(() => TypeRoom, typeRoom => typeRoom.rooms)
     typeRoom: TypeRoom;
+
+    @OneToMany(()=>Booking, booking => booking.room)
+    bookings: Booking[];
 }

@@ -23,10 +23,7 @@ export class TypeRoom {
     sizeRoom: number;
 
     @Column()
-    beds: number;
-
-    @Column()
-    minPeople: number;
+    beds: string;
 
     @Column()
     maxPeople: number;

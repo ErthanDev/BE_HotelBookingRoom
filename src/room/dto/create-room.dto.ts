@@ -1,5 +1,4 @@
 import { IsNotEmpty } from "class-validator";
-import { RoomStatus } from "src/enum/roomStatus.enum";
 
 export class CreateRoomDto {
     @IsNotEmpty()
@@ -10,9 +9,6 @@ export class CreateRoomDto {
 
     @IsNotEmpty()
     pricePerHour: number;
-
-    
-    status: RoomStatus;
 
     @IsNotEmpty()
     interior: string;
