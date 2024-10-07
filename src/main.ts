@@ -5,8 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
 import { TransformInterceptor } from './core/transform.interceptor';
-import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
-import { RolesGuard } from './auth/guard/roles.guard';
+import { JwtAuthGuard } from './module/auth/guard/jwt-auth.guard';
+import { RolesGuard } from './module/auth/guard/roles.guard';
 import helmet from 'helmet';
 import { join } from 'path';
 async function bootstrap() {
@@ -17,7 +17,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
   }));
-  app.useGlobalInterceptors(new TransformInterceptor(reflector)); 
+  app.useGlobalInterceptors(new TransformInterceptor(reflector));
   app.useGlobalGuards(new JwtAuthGuard(reflector));
   app.useGlobalGuards(new RolesGuard(reflector));
   app.useStaticAssets(join(__dirname, '..', 'public'));
@@ -42,6 +42,6 @@ async function bootstrap() {
   }).catch((error) => {
     console.error('Error starting the application:', error);
   });
-  
+
 }
 bootstrap();

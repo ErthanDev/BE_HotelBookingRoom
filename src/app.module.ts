@@ -1,23 +1,23 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './module/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './module/auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { TypeRoomModule } from './type-room/type-room.module';
-import { RoomModule } from './room/room.module';
-import { MailModule } from './mail/mail.module';
-import { PaymentModule } from './payment/payment.module';
-import { SurchargeModule } from './surcharge/surcharge.module';
-import { VnpayPaymentModule } from './vnpay-payment/vnpay-payment.module';
-import { ZalopayPaymentModule } from './zalopay-payment/zalopay-payment.module';
-import { BookingModule } from './booking/booking.module';
-import { DiscountModule } from './discount/discount.module';
+import { TypeRoomModule } from './module/type-room/type-room.module';
+import { RoomModule } from './module/room/room.module';
+import { MailModule } from './module/mail/mail.module';
+import { PaymentModule } from './module/payment/payment.module';
+import { SurchargeModule } from './module/surcharge/surcharge.module';
+import { VnpayPaymentModule } from './module/vnpay-payment/vnpay-payment.module';
+import { ZalopayPaymentModule } from './module/zalopay-payment/zalopay-payment.module';
+import { BookingModule } from './module/booking/booking.module';
+import { DiscountModule } from './module/discount/discount.module';
 
-import { UtilityModule } from './utility/utility.module';
+import { UtilityModule } from './module/utility/utility.module';
 
 
 @Module({
