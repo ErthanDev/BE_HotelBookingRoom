@@ -10,7 +10,7 @@ export class MailController {
   @Get()
   @Public()
   sendMail() {
-    const createMailDto: CreateMailDto = new CreateMailDto();
-    this.mailService.sendMail(createMailDto);
+    // const createMailDto: CreateMailDto = new CreateMailDto();
+    // this.mailService.sendMail(createMailDto);
   }
 }

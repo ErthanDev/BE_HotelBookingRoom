@@ -17,6 +17,7 @@ export class VnpayPaymentService {
   async buildPaymentUrl(req:any ) {
     const transID = Math.floor(Math.random() * 1000000);
     const bookingId = req.body.bookingId;
+    const discountCode = req.body.discountCode;
     const paymentUrl = this.vnpayService.buildPaymentUrl({
       vnp_Amount: req.body.amount,
       vnp_IpAddr:
@@ -25,7 +26,7 @@ export class VnpayPaymentService {
           req.socket.remoteAddress ||
           req.ip,
       vnp_TxnRef:`${moment().format('YYMMDD')}_${transID}` ,
-      vnp_OrderInfo: `Payment for booking room, bookingId: ${bookingId}`,
+      vnp_OrderInfo: `Payment for booking room, bookingId: ${bookingId}, discountCode: ${discountCode}`,
       vnp_ReturnUrl: `${this.configService.get<string>('VNPAY_RETURN_URL')}`,
       vnp_Locale: VnpLocale.VN,
     });
@@ -49,9 +50,10 @@ export class VnpayPaymentService {
       throw new BadRequestException('Payment failed');
     }
     const orderInfo = verify.vnp_OrderInfo;
-    const bookingId = orderInfo.split('bookingId: ')[1];
-    const paymentDto = new CreatePaymentDto(+verify.vnp_Amount, PaymentMethod.Vnpay,bookingId, verify.vnp_TxnRef);
-    console.log("Dto"+paymentDto.bookingId);
+    const infoParts = orderInfo.split(', ');
+    const bookingId = infoParts.find(part => part.startsWith('bookingId')).split(': ')[1];
+    const discountCode = infoParts.find(part => part.startsWith('discountCode')).split(': ')[1];
+    const paymentDto = new CreatePaymentDto(+verify.vnp_Amount, PaymentMethod.Vnpay,bookingId, verify.vnp_TxnRef, discountCode);
     const newPayment = await this.paymentService.createPayment(paymentDto);
     return {payment: newPayment};
   }

@@ -13,9 +13,13 @@ export class CreatePaymentDto {
     paymentStatus: PaymentStatus;
     @IsNotEmpty()
     bookingId: string;
-    constructor(amount: number, paymentMethod: PaymentMethod, bookingId: string, paymentId: string) {
+
+    discountCode: string;
+    constructor(amount: number, paymentMethod: PaymentMethod, bookingId: string, paymentId: string,discountCode: string) {
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.bookingId = bookingId;
+        this.paymentId = paymentId;
+        this.discountCode = discountCode;
     }
 }

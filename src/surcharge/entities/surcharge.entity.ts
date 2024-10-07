@@ -1,4 +1,5 @@
-import { Column, Entity, Generated, PrimaryColumn } from "typeorm";
+import { Payment } from "src/payment/entities/payment.entity";
+import { Column, Entity, Generated, ManyToMany, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Surcharge {
@@ -11,4 +12,6 @@ export class Surcharge {
 
     @Column()
     surchargePercentage: number
+
+   
 }

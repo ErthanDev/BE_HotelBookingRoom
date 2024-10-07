@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { Room } from './entities/room.entity';
@@ -22,7 +22,7 @@ export class RoomService {
     });
 
     if (!typeRoom) {
-      throw new Error('TypeRoom not found');
+      throw new BadRequestException('TypeRoom not found');
     }
 
     // Tạo đối tượng Room
@@ -77,10 +77,26 @@ export class RoomService {
   }
 
   update(id: number, updateRoomDto: UpdateRoomDto) {
-    return `This action updates a #${id} room`;
+    return this.roomRepository.update(id, updateRoomDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} room`;
+    return this.roomRepository.delete(id);
+  }
+
+
+  async getAvailableRooms(startTime: Date, endTime: Date, numberOfPeople: number): Promise<Room[]> {
+    const availableRooms = await this.roomRepository
+      .createQueryBuilder('room')
+      .leftJoinAndSelect('room.bookings', 'booking')
+      .leftJoinAndSelect('room.typeRoom', 'typeRoom')
+      .where(
+        'booking.startTime IS NULL OR (booking.endTime <= :startTime OR booking.startTime >= :endTime)', 
+        { startTime, endTime },
+      )
+      .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })  // Đồng bộ với tham số
+      .getMany();
+
+    return availableRooms;
   }
 }

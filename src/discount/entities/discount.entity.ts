@@ -1,13 +1,30 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { DiscountStatus } from "src/enum/discountStatus.enum";
+import { Payment } from "src/payment/entities/payment.entity";
+import { Column, Entity, Generated, JoinColumn, ManyToMany, OneToOne, PrimaryColumn } from "typeorm";
 
-@Entity()  
+@Entity()
 export class Discount {
-    @PrimaryColumn()
+    @PrimaryColumn({ type: "uuid" })
+    @Generated("uuid")
     discountId: number;
+
+    @Column({ unique: true })
+    discountCode: string;
 
     @Column()
     discountName: string;
 
     @Column()
     discountPercentage: number;
+
+    @Column({ type: "enum", enum: DiscountStatus, default: DiscountStatus.Available })
+    discountStatus: DiscountStatus;
+
+    @Column()
+    validFrom: Date;
+
+    @Column()
+    validTo: Date;
+
 }
+
