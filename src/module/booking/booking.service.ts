@@ -3,7 +3,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from './entities/booking.entity';
-import { In, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Room } from '../room/entities/room.entity';
 
@@ -40,9 +40,40 @@ export class BookingService {
     return booking;
   }
 
-  findAll() {
-    return `This action returns all booking`;
-  }
+  // findAll() {
+
+  //   return `This action returns all booking`;
+  // }
+
+  async findAll(qs: any) {
+    const take = +qs.limit || 10;
+    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
+    const keyword = qs.keyword || '';
+    const defaultLimit = +qs.limit ? +qs.limit : 10;
+
+    const totalItems = await this.bookingRepository.count();
+
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    const [result, total] = await this.bookingRepository.findAndCount({
+        take: take || totalItems,
+        skip: skip,
+        relations: ['user', 'room'],
+        where: {
+            bookingId: keyword ? Like(`%${keyword}%`) : undefined,
+        },
+    });
+
+    return {
+        meta: {
+            current: +qs.currentPage || 1,
+            pageSize: +qs.limit,
+            pages: totalPages,
+            total: total,
+        },
+        result,
+    };
+}
 
   findOne(id: number) {
     return `This action returns a #${id} booking`;
