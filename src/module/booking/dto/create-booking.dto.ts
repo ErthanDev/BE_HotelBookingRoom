@@ -16,4 +16,10 @@ export class CreateBookingDto {
     @IsNotEmpty()
     @Min(1, { message: 'The number of persons must be greater than 0' })
     numberOfPerson: number;
+
+    @IsNotEmpty()
+    userId: string;  
+
+    @IsNotEmpty()
+    roomId: number;  
 }

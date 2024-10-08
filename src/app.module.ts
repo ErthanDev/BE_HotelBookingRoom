@@ -34,7 +34,7 @@ import { UtilityModule } from './module/utility/utility.module';
         host: configService.get<string>('HOST'),
         port: +configService.get<string>('DB_PORT'),
         username: configService.get<string>('DB_USER'),
-        password: configService.get<string>('DB_PASS'),
+        password: configService.get<string>('DB_PASS') || null,
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/../**/*.entity.js'],
         synchronize: true,
