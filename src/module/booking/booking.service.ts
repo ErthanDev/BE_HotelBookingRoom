@@ -36,7 +36,19 @@ export class BookingService {
       bookingType,
       numberOfGuest: numberOfPerson,
     });
-    return  await this.bookingRepository.save(booking);;
+    await this.bookingRepository.save(booking);
+    const { refreshToken,password, ...userWithoutToken } = booking.user;
+    return {
+      bookingId: booking.bookingId,
+      bookingDate: booking.bookingDate,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      bookingStatus: booking.bookingStatus,
+      bookingType: booking.bookingType,
+      numberOfPerson: booking.numberOfGuest,
+      user: userWithoutToken,
+      room: booking.room,
+    };
   }
 
   async findAll(qs: any) {
@@ -78,11 +90,22 @@ export class BookingService {
     if (!booking) {
       throw new NotFoundException(`Booking with ID ${id} not found`);
     }
-    return booking;
+    const { refreshToken,password, ...userWithoutToken } = booking.user;
+    return {
+      bookingId: booking.bookingId,
+      bookingDate: booking.bookingDate,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      bookingStatus: booking.bookingStatus,
+      bookingType: booking.bookingType,
+      numberOfPerson: booking.numberOfGuest,
+      user: userWithoutToken,
+      room: booking.room,
+    };
   }
 
   update(id: string, updateBookingDto: UpdateBookingDto) {
-    return `This action updates a #${id} booking`;
+    return this.bookingRepository.update(id, updateBookingDto);
   }
 
   remove(id: string) {
