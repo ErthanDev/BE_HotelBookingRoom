@@ -23,6 +23,7 @@ export class UsersService {
       phoneNumber: createUserDto.phoneNumber,
       address: createUserDto.address,
       role: createUserDto.role,
+      gender:createUserDto.gender
     });
 
     const savedUser = await this.usersRepository.save(newUser);
@@ -83,6 +84,7 @@ export class UsersService {
       password: hash,
       phoneNumber: createUserDto.phoneNumber,
       address: createUserDto.address,
+      gender:createUserDto.gender
     });
 
     const savedUser = await this.usersRepository.save(newUser);

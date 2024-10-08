@@ -7,9 +7,6 @@ export class CreateTypeRoomDto {
     name: string;
 
     @IsNotEmpty()
-    description: string;
-
-    @IsNotEmpty()
     introduction: string;
 
     @IsNotEmpty()
@@ -20,7 +17,7 @@ export class CreateTypeRoomDto {
 
     @IsNotEmpty()
     beds: string;
-    
+
     @IsNotEmpty()
     maxPeople: number;
 

@@ -10,7 +10,7 @@ export class MailService {
   async sendMail(createMailDto: CreateMailDto) {
     await this.mailService.sendMail({
       to: createMailDto.email, // list of receivers
-      from: 'Élégance', // override default from 
+      from: 'The Élégance Hotel', // override default from 
       subject: 'Cảm ơn quý khách đã lựa chọn và tin tưởng dịch vụ đặt phòng của chúng tôi!',
       template: 'mail-template', // HTML body content 
       context: {

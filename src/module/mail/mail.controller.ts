@@ -7,10 +7,5 @@ import { CreateMailDto } from './dto/create-mail.dto';
 @Controller('mail')
 export class MailController {
   constructor(private readonly mailService: MailService) {}
-  @Get()
-  @Public()
-  sendMail() {
-    // const createMailDto: CreateMailDto = new CreateMailDto();
-    // this.mailService.sendMail(createMailDto);
-  }
+ 
 }

@@ -36,14 +36,8 @@ export class BookingService {
       bookingType,
       numberOfGuest: numberOfPerson,
     });
-    await this.bookingRepository.save(booking);
-    return booking;
+    return  await this.bookingRepository.save(booking);;
   }
-
-  // findAll() {
-
-  //   return `This action returns all booking`;
-  // }
 
   async findAll(qs: any) {
     const take = +qs.limit || 10;

@@ -15,7 +15,7 @@ export class User {
     password: string;
     @Column({ length: 10 })
     phoneNumber: string;
-    @Column()
+    @Column({default: true})
     gender: boolean;
     @Column()
     address: string;
