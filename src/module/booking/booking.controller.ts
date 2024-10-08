@@ -2,6 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
+import { Roles } from 'src/decorators/customize';
+import { use } from 'passport';
+import { UserRole } from 'src/enum/userRole.enum';
 
 @Controller('booking')
 export class BookingController {
@@ -13,6 +16,7 @@ export class BookingController {
   }
 
   @Get()
+  @Roles(UserRole.Staff)
   findAll(@Query() qs: any) {
     return this.bookingService.findAll(qs);
   }
@@ -24,10 +28,11 @@ export class BookingController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
-    return this.bookingService.update(+id, updateBookingDto);
+    return this.bookingService.update(id, updateBookingDto);
   }
 
   @Delete(':id')
+  @Roles(UserRole.Staff)
   remove(@Param('id') id: string) {
     return this.bookingService.remove(id);
   }

@@ -87,7 +87,7 @@ export class BookingService {
     return booking;
   }
 
-  update(id: number, updateBookingDto: UpdateBookingDto) {
+  update(id: string, updateBookingDto: UpdateBookingDto) {
     return `This action updates a #${id} booking`;
   }
 
