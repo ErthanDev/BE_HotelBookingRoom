@@ -75,15 +75,23 @@ export class BookingService {
     };
 }
 
-  findOne(id: number) {
-    return `This action returns a #${id} booking`;
+  async findOne(id: string) {
+    const booking = await this.bookingRepository.findOne({
+      where: { bookingId: id },
+      relations: ['user', 'room']
+    });
+
+    if (!booking) {
+      throw new NotFoundException(`Booking with ID ${id} not found`);
+    }
+    return booking;
   }
 
   update(id: number, updateBookingDto: UpdateBookingDto) {
     return `This action updates a #${id} booking`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} booking`;
+  remove(id: string) {
+    return this.bookingRepository.delete(id);
   }
 }
