@@ -10,16 +10,19 @@ export class Room {
     @Column()
     pricePerDay: number;
 
+    @Column({ length: 50, unique:true })
+    name: string;
+
     @Column()
     pricePerHour: number;
 
-    @Column()
+    @Column({type:"text"})
     interior: string;
 
-    @Column()
+    @Column({type:"text"})
     image: string;
 
-    @Column()
+    @Column({type:"text"})
     facilities: string;
 
     @ManyToOne(() => TypeRoom, typeRoom => typeRoom.rooms)

@@ -14,6 +14,9 @@ export class CreateRoomDto {
     interior: string;
 
     @IsNotEmpty()
+    name: string;
+    
+    @IsNotEmpty()
     image: string;
 
     @IsNotEmpty()
