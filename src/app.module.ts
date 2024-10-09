@@ -18,6 +18,7 @@ import { BookingModule } from './module/booking/booking.module';
 import { DiscountModule } from './module/discount/discount.module';
 
 import { UtilityModule } from './module/utility/utility.module';
+import { ReviewsModule } from './module/reviews/reviews.module';
 
 
 @Module({
@@ -56,6 +57,7 @@ import { UtilityModule } from './module/utility/utility.module';
     BookingModule,
     DiscountModule,
     UtilityModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

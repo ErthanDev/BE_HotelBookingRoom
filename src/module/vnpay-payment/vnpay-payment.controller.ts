@@ -8,7 +8,6 @@ export class VnpayPaymentController {
 
   @Post()
   @ResponseMessage('Create vnpay payment url success')
-  @Public()
   async buildPaymentUrl(@Req() req) {
     return this.vnpayPaymentService.buildPaymentUrl(req);
   }

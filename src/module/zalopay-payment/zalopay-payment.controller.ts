@@ -8,7 +8,6 @@ export class ZalopayPaymentController {
   constructor(private readonly zalopayPaymentService: ZalopayPaymentService) {}
 
   @Post()
-  @Public()
   zaloPayGateway(@Req() req:any) {
    return this.zalopayPaymentService.createZaloPayPayment(req);
   }
