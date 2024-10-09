@@ -5,6 +5,7 @@ import { Room } from './entities/room.entity';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeRoom } from 'src/module/type-room/entities/type-room.entity';
+import { BookingStatus } from 'src/enum/bookingStatus.enum';
 
 @Injectable()
 export class RoomService {
@@ -94,7 +95,8 @@ export class RoomService {
         'booking.startTime IS NULL OR (booking.endTime <= :startTime OR booking.startTime >= :endTime)',
         { startTime, endTime },
       )
-      .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })  // Đồng bộ với tham số
+      .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
+      .orWhere('booking.bookingStatus NOT IN (:...statuses)',{statuses:[BookingStatus.Unpaid,BookingStatus.Paid]})  // Đồng bộ với tham số
       .getMany();
 
     return availableRooms;

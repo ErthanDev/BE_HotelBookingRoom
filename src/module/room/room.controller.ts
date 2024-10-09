@@ -23,12 +23,12 @@ export class RoomController {
     return this.roomService.findAll(qs);
   }
 
-  @Get(':id')
-  @ResponseMessage('Get a room available successfully')
-  @Public()
-  findOne(@Param('id') id: string) {
-    return this.roomService.findOne(+id);
-  }
+  // @Get(':id')
+  // @ResponseMessage('Get a room available successfully')
+  // @Public()
+  // findOne(@Param('id') id: string) {
+  //   return this.roomService.findOne(+id);
+  // }
 
   @Patch(':id')
   @ResponseMessage('Update room available successfully')
@@ -44,7 +44,7 @@ export class RoomController {
     return this.roomService.remove(+id);
   }
 
-  @Get('room-available')
+  @Get('available/room')
   @ResponseMessage('Get room available successfully')
   @Public()
   getRoomAvailable(@Query('startTime') starTime, @Query('endTime') endTime, @Query('numberOfPeople') numberOfPeople) {
