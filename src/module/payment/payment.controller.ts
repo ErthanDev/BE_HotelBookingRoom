@@ -8,12 +8,16 @@ import { Public, ResponseMessage } from 'src/decorators/customize';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) { }
 
+  @Patch(':id')
+  @ResponseMessage('Refund successfully')
+  refund(@Param('id') id: string) {
+    return this.paymentService.refundPayment(id);
+  }
+  
   @Get()
   @Public()
-  test() { 
-    const startTime = new Date('2024-10-01T08:00:00');
-  const endTime = new Date('2024-11-01T14:30:00');
-  console.log( )
+  findAll(){
+    return this.paymentService.findAll();
   }
- 
+
 }

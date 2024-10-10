@@ -4,8 +4,9 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entities/review.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from '../booking/entities/booking.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { BookingStatus } from 'src/enum/bookingStatus.enum';
+import { IUser } from '../users/user.interface';
 
 @Injectable()
 export class ReviewsService {
@@ -47,7 +48,7 @@ export class ReviewsService {
         bookingType: savedReview.booking.bookingType,
         bookingStatus: savedReview.booking.bookingStatus,
         bookingDate: savedReview.booking.bookingDate,
-        numberOfGuest: 2,
+        numberOfGuest: savedReview.booking.numberOfGuest,
       },
       user: {
         id: savedReview.user.id,
@@ -58,14 +59,53 @@ export class ReviewsService {
     };
   }
 
-  findAll() {
-    return `This action returns all reviews`;
+  async findAll(qs: any) {
+    const take = +qs.limit || 10;
+    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
+    const keyword = qs.keyword || '';
+    const defaultLimit = +qs.limit ? +qs.limit : 10;
+  
+    const totalItems = await this.reviewRepository.count();
+  
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+  
+    const [reviews, total] = await this.reviewRepository.findAndCount({
+      take: take || totalItems,
+      skip: skip,
+      relations: ['user', 'booking'],
+    });
+  
+    // Mapping response giống như trong hàm `create`
+    const mappedReviews = reviews.map(review => ({
+      rating: review.rating,
+      comment: review.comment,
+      booking: {
+        bookingId: review.booking.bookingId,
+        startTime: review.booking.startTime,
+        endTime: review.booking.endTime,
+        bookingType: review.booking.bookingType,
+        bookingStatus: review.booking.bookingStatus,
+        bookingDate: review.booking.bookingDate,
+        numberOfGuest: review.booking.numberOfGuest,
+      },
+      user: {
+        id: review.user.id,
+        name: review.user.name,
+      },
+      reviewId: review.reviewId,
+    }));
+  
+    return {
+      meta: {
+        current: +qs.currentPage || 1,
+        pageSize: +qs.limit,
+        pages: totalPages,
+        total: total,
+      },
+      result: mappedReviews,
+    };
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} review`;
-  }
-
+  
   update(id: number, updateReviewDto: UpdateReviewDto) {
     return `This action updates a #${id} review`;
   }

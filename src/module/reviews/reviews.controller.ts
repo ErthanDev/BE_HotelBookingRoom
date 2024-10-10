@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
-import { Public } from 'src/decorators/customize';
+import { Public, User } from 'src/decorators/customize';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -15,13 +15,9 @@ export class ReviewsController {
   }
 
   @Get()
-  findAll() {
-    return this.reviewsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reviewsService.findOne(+id);
+  @Public()
+  findAll(@Query() qs: any) {
+    return this.reviewsService.findAll(qs);
   }
 
   @Patch(':id')
