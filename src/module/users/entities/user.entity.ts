@@ -1,6 +1,7 @@
 import { Booking } from "src/module/booking/entities/booking.entity";
 import { UserRole } from "src/enum/userRole.enum";
-import { Column, Entity, Generated, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, Generated, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Review } from "src/module/reviews/entities/review.entity";
 
 @Entity()
 export class User {
@@ -26,4 +27,8 @@ export class User {
 
     @OneToMany(() => Booking, booking => booking.user)
     bookings: Booking[];
+
+    @OneToOne(()=> Review, review=>review.user)
+    review: Review;
+
 }

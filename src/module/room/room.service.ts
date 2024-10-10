@@ -86,7 +86,7 @@ export class RoomService {
   }
 
 
-  async getAvailableRooms(startTime: Date, endTime: Date, numberOfPeople: number): Promise<Room[]> {
+  async getAvailableRooms(startTime: Date, endTime: Date, numberOfPeople: number, sortDirection: 'ASC' | 'DESC'): Promise<Room[]> {
     const availableRooms = await this.roomRepository
       .createQueryBuilder('room')
       .leftJoinAndSelect('room.bookings', 'booking')
@@ -96,9 +96,23 @@ export class RoomService {
         { startTime, endTime },
       )
       .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
-      .orWhere('booking.bookingStatus NOT IN (:...statuses)',{statuses:[BookingStatus.Unpaid,BookingStatus.Paid]})  // Đồng bộ với tham số
+      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Unpaid, BookingStatus.Paid] })
+      .orderBy('typeRoom.maxPeople', sortDirection)  // Sắp xếp theo số lượng người tối đa
       .getMany();
-
+  
     return availableRooms;
   }
+  
+  async getRoomByTypeRoomId(typeRoomId: string) {
+    const typeRoom = await this.typeRoomRepository.findOne({
+      where: {
+        id: typeRoomId
+      }
+    });
+    return this.roomRepository.find({
+      where: {
+         typeRoom: typeRoom
+      },
+    });
+  } 
 }

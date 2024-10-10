@@ -4,7 +4,8 @@ import { TypeBooking } from "src/enum/typeBooking.enum";
 import { Payment } from "src/module/payment/entities/payment.entity";
 import { Room } from "src/module/room/entities/room.entity";
 import { User } from "src/module/users/entities/user.entity";
-import { Column, Entity, Generated, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, Generated, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { Review } from "src/module/reviews/entities/review.entity";
 
 @Entity()
 export class Booking {
@@ -41,6 +42,9 @@ export class Booking {
 
     @OneToMany(() => BookingUtility, bookingUtility => bookingUtility.booking)
     bookingUtilities: BookingUtility[];
+
+    @OneToOne(()=>Review, review=>review.booking) 
+    review: Review;
 
 
 }
