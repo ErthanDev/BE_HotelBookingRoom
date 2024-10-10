@@ -69,7 +69,21 @@ export class BookingService {
             bookingId: keyword ? Like(`%${keyword}%`) : undefined,
         },
     });
-
+    const fomattedResult = result.map((booking) => {
+        const { refreshToken,password, ...userWithoutToken } = booking.user;
+        return {
+            bookingId: booking.bookingId,
+            bookingDate: booking.bookingDate,
+            startTime: booking.startTime,
+            endTime: booking.endTime,
+            bookingStatus: booking.bookingStatus,
+            bookingType: booking.bookingType,
+            numberOfPerson: booking.numberOfGuest,
+            user: userWithoutToken,
+            room: booking.room,
+        };
+    });
+    
     return {
         meta: {
             current: +qs.currentPage || 1,
@@ -77,9 +91,9 @@ export class BookingService {
             pages: totalPages,
             total: total,
         },
-        result,
+        result: fomattedResult,
     };
-}
+  }
 
   async findOne(id: string) {
     const booking = await this.bookingRepository.findOne({
@@ -88,7 +102,7 @@ export class BookingService {
     });
 
     if (!booking) {
-      throw new NotFoundException(`Booking with ID ${id} not found`);
+      throw new NotFoundException(`Booking not found`);
     }
     const { refreshToken,password, ...userWithoutToken } = booking.user;
     return {
@@ -104,11 +118,15 @@ export class BookingService {
     };
   }
 
-  update(id: string, updateBookingDto: UpdateBookingDto) {
-    return this.bookingRepository.update(id, updateBookingDto);
+  async update(id: string, updateBookingDto: UpdateBookingDto) {
+    const booking = await this.findOne(id);
+    await this.bookingRepository.update(id, updateBookingDto);
+    return booking;
   }
 
-  remove(id: string) {
-    return this.bookingRepository.delete(id);
+  async remove(id: string) {
+    const booking = await this.findOne(id);
+    await this.bookingRepository.delete(id);
+    return booking;
   }
 }

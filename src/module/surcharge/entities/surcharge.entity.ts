@@ -12,6 +12,4 @@ export class Surcharge {
 
     @Column()
     surchargePercentage: number
-
-
 }
