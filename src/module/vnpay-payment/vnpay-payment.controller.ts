@@ -18,10 +18,10 @@ export class VnpayPaymentController {
   async handleVnpayReturn(@Req() req:any,@Res() res:any) {
     try{
       await this.vnpayPaymentService.handleVnpayReturn(req);
-      return res.redirect('facebook.com');
+      return res.redirect('https://www.facebook.com');
     }
     catch(error){
-      return res.redirect('youtube.com');
+      return res.redirect('https://www.youtube.com');
     }
   }
 }

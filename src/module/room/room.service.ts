@@ -97,7 +97,7 @@ export class RoomService {
       )
       .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
       .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Unpaid, BookingStatus.Paid] })
-      .orderBy('typeRoom.maxPeople', sortDirection)  // Sắp xếp theo số lượng người tối đa
+      .orderBy('room.pricePerDay', sortDirection)  // Sắp xếp theo số lượng người tối đa
       .getMany();
   
     return availableRooms;

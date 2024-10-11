@@ -15,6 +15,11 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
     const hash = await bcrypt.hash(createUserDto.password, 10);
+    const existUser = await this.checkUserExists(createUserDto.email)
+
+    if (existUser) {
+      throw new NotFoundException(`User with email ${createUserDto.email} already exists`);
+    }
 
     const newUser = this.usersRepository.create({
       name: createUserDto.name,
@@ -23,7 +28,7 @@ export class UsersService {
       phoneNumber: createUserDto.phoneNumber,
       address: createUserDto.address,
       role: createUserDto.role,
-      gender:createUserDto.gender
+      gender: createUserDto.gender
     });
 
     const savedUser = await this.usersRepository.save(newUser);
@@ -77,6 +82,11 @@ export class UsersService {
 
   async register(createUserDto: RegisterUserDto) {
     const hash = await bcrypt.hash(createUserDto.password, 10);
+    const existUser = await this.checkUserExists(createUserDto.email)
+
+    if (existUser) {
+      throw new NotFoundException(`User with email ${createUserDto.email} already exists`);
+    }
 
     const newUser = this.usersRepository.create({
       name: createUserDto.name,
@@ -84,7 +94,7 @@ export class UsersService {
       password: hash,
       phoneNumber: createUserDto.phoneNumber,
       address: createUserDto.address,
-      gender:createUserDto.gender
+      gender: createUserDto.gender
     });
 
     const savedUser = await this.usersRepository.save(newUser);
