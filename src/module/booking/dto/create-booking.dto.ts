@@ -1,4 +1,5 @@
 import { IsNotEmpty, Min } from "class-validator";
+import { User } from "src/decorators/customize";
 import { BookingStatus } from "src/enum/bookingStatus.enum";
 import { TypeBooking } from "src/enum/typeBooking.enum";
 
@@ -17,7 +18,7 @@ export class CreateBookingDto {
     @Min(1, { message: 'The number of persons must be greater than 0' })
     numberOfPerson: number;
 
-    @IsNotEmpty()
+    
     userId: string;  
 
     @IsNotEmpty()
