@@ -43,7 +43,6 @@ export class VnpayPaymentService {
         throw new BadRequestException('Data integrity verification failed');
       }
       if (!verify.isSuccess) {
-
         throw new BadRequestException('Payment failed');
       }
     } catch (error) {

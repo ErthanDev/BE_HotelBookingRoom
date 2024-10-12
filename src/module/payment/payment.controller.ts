@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Query } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { Public, ResponseMessage } from 'src/decorators/customize';
+import { Public, ResponseMessage, Roles } from 'src/decorators/customize';
+import { UserRole } from 'src/enum/userRole.enum';
 
 @Controller('payment')
 export class PaymentController {
@@ -14,10 +15,39 @@ export class PaymentController {
     return this.paymentService.refundPayment(id);
   }
   
+  @Post()
+  @ResponseMessage('Create payment successfully')
+  @Roles(UserRole.Staff)
+  create(@Body() createPaymentDto: CreatePaymentDto) {
+    return this.paymentService.createPayment(createPaymentDto);
+  }
+
   @Get()
-  @Public()
+  @ResponseMessage('Get all payment successfully')
+  @Roles(UserRole.Staff)
   findAll(){
     return this.paymentService.findAll();
   }
 
+  @Get('revenue/daily')
+  @Roles(UserRole.Staff)
+  @ResponseMessage('Get daily revenue successfully')
+  getDailyRevenue(@Query('startDate') startDate: string, @Query('endDate') endDate: string) {
+    return this.paymentService.getRevenueByDay(startDate, endDate);
+  }
+
+  @Get('revenue/monthly')
+  @Roles(UserRole.Staff)
+  @ResponseMessage('Get monthly revenue successfully')
+  getMonthlyRevenue(@Query('year') year:number) {
+    return this.paymentService.getRevenueByMonth(year);
+  }
+
+  @Get('revenue/yearly')
+  @Roles(UserRole.Staff)
+  @ResponseMessage('Get yearly revenue successfully')
+  @Public()
+  getYearlyRevenue() {
+    return this.paymentService.getRevenueByYear();
+  }
 }
