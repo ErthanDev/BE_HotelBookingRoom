@@ -38,25 +38,7 @@ export class ReviewsService {
     });
     const savedReview = await this.reviewRepository.save(review);
 
-    return {
-      rating: savedReview.rating,
-      comment: savedReview.comment,
-      booking: {
-        bookingId: savedReview.booking.bookingId,
-        startTime: savedReview.booking.startTime,
-        endTime: savedReview.booking.endTime,
-        bookingType: savedReview.booking.bookingType,
-        bookingStatus: savedReview.booking.bookingStatus,
-        bookingDate: savedReview.booking.bookingDate,
-        numberOfGuest: savedReview.booking.numberOfGuest,
-      },
-      user: {
-        id: savedReview.user.id,
-        name: savedReview.user.name,
-
-      },
-      reviewId: savedReview.reviewId,
-    };
+    return savedReview
   }
 
   async findAll(qs: any) {

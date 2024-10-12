@@ -7,6 +7,9 @@ import { In, Like, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Room } from '../room/entities/room.entity';
 import { Utility } from '../utility/entities/utility.entity';
+import { plainToClass } from 'class-transformer';
+import { BookingResponseDto, BookingsResponseDto } from './dto/booking-response.dto';
+import { MetaResponseDto } from 'src/core/meta-response.dto';
 
 @Injectable()
 export class BookingService {
@@ -39,19 +42,7 @@ export class BookingService {
       bookingType,
       numberOfGuest: numberOfPerson,
     });
-    await this.bookingRepository.save(booking);
-    const { refreshToken,password, ...userWithoutToken } = booking.user;
-    return {
-      bookingId: booking.bookingId,
-      bookingDate: booking.bookingDate,
-      startTime: booking.startTime,
-      endTime: booking.endTime,
-      bookingStatus: booking.bookingStatus,
-      bookingType: booking.bookingType,
-      numberOfPerson: booking.numberOfGuest,
-      user: userWithoutToken,
-      room: booking.room,
-    };
+    return await this.bookingRepository.save(booking);
   }
 
   async findAll(qs: any) {
@@ -67,32 +58,23 @@ export class BookingService {
     const [result, total] = await this.bookingRepository.findAndCount({
         take: take || totalItems,
         skip: skip,
-        relations: ['user', 'room'],
+        relations: ['user', 'room','bookingUtilities', 'bookingUtilities.utility'],
     });
-    const fomattedResult = result.map((booking) => {
-        const { refreshToken,password, ...userWithoutToken } = booking.user;
-        return {
-            bookingId: booking.bookingId,
-            bookingDate: booking.bookingDate,
-            startTime: booking.startTime,
-            endTime: booking.endTime,
-            bookingStatus: booking.bookingStatus,
-            bookingType: booking.bookingType,
-            numberOfPerson: booking.numberOfGuest,
-            user: userWithoutToken,
-            room: booking.room,
-        };
+    const booking = plainToClass(BookingResponseDto, result);
+    const metaResponseDto = plainToClass(MetaResponseDto, {
+      current: +qs.currentPage || 1,
+      pageSize: +qs.limit || 10,
+      pages: totalPages,
+      total: total,
+    });
+
+    // Tạo RoomsResponseDto
+    const bookingsResponseDto = plainToClass(BookingsResponseDto, {
+      meta: metaResponseDto,
+      bookings: booking,
     });
     
-    return {
-        meta: {
-            current: +qs.currentPage || 1,
-            pageSize: +qs.limit,
-            pages: totalPages,
-            total: total,
-        },
-        result: fomattedResult,
-    };
+    return bookingsResponseDto;
   }
 
   async findOne(id: string) {
@@ -104,24 +86,12 @@ export class BookingService {
     if (!booking) {
       throw new NotFoundException(`Booking not found`);
     }
-    const { refreshToken,password, ...userWithoutToken } = booking.user;
-    return {
-      bookingId: booking.bookingId,
-      bookingDate: booking.bookingDate,
-      startTime: booking.startTime,
-      endTime: booking.endTime,
-      bookingStatus: booking.bookingStatus,
-      bookingType: booking.bookingType,
-      numberOfPerson: booking.numberOfGuest,
-      user: userWithoutToken,
-      room: booking.room,
-    };
+    return booking
   }
 
   async findMyBooking(userId: string, qs: any) {
     const take = +qs.limit || 10;
     const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const keyword = qs.keyword || '';
     const defaultLimit = +qs.limit ? +qs.limit : 10;
 
     const totalItems = await this.bookingRepository.count();
@@ -132,34 +102,25 @@ export class BookingService {
     const [result, total] = await this.bookingRepository.findAndCount({
         take: take || totalItems,
         skip: skip,
-        relations: ['user', 'room'],
+        relations: ['user', 'room','bookingUtilities', 'bookingUtilities.utility'],
         where: { user: user }
     });
 
-    const fomattedResult = result.map((booking) => {
-      const { refreshToken,password, ...userWithoutToken } = booking.user;
-      return {
-          bookingId: booking.bookingId,
-          bookingDate: booking.bookingDate,
-          startTime: booking.startTime,
-          endTime: booking.endTime,
-          bookingStatus: booking.bookingStatus,
-          bookingType: booking.bookingType,
-          numberOfPerson: booking.numberOfGuest,
-          user: userWithoutToken,
-          room: booking.room,
-      };
-  });
-  
-  return {
-      meta: {
-          current: +qs.currentPage || 1,
-          pageSize: +qs.limit,
-          pages: totalPages,
-          total: total,
-      },
-      result: fomattedResult,
-  };
+    const booking = plainToClass(BookingResponseDto, result);
+    const metaResponseDto = plainToClass(MetaResponseDto, {
+      current: +qs.currentPage || 1,
+      pageSize: +qs.limit || 10,
+      pages: totalPages,
+      total: total,
+    });
+
+    // Tạo RoomsResponseDto
+    const bookingsResponseDto = plainToClass(BookingsResponseDto, {
+      meta: metaResponseDto,
+      bookings: booking,
+    });
+    
+    return bookingsResponseDto;
   }
 
   // update còn lỗi

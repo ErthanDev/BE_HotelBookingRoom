@@ -102,9 +102,8 @@ export class ZalopayPaymentService {
       result.return_message = ex.message;
       return result;
     }
-
+    
     // thông báo kết quả cho ZaloPay server
-    console.log("result =", result);
     return result;
   }
 

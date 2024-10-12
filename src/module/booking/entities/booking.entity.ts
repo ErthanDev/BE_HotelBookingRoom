@@ -31,19 +31,19 @@ export class Booking {
     @Column({ type: 'int' })
     numberOfGuest: number;
 
-    @ManyToOne(() => User, user => user.bookings)
-    user: User;
+    @ManyToOne(() => User, user => user.bookings,{ onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    user: User
 
-    @ManyToOne(() => Room, room => room.bookings)
+    @ManyToOne(() => Room, room => room.bookings,{ onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     room: Room;
 
-    @OneToMany(() => Payment, payment => payment.booking)
+    @OneToMany(() => Payment, payment => payment.booking,{ onDelete: 'SET NULL', onUpdate: 'CASCADE' })
     payments: Payment[];
 
-    @OneToMany(() => BookingUtility, bookingUtility => bookingUtility.booking)
+    @OneToMany(() => BookingUtility, bookingUtility => bookingUtility.booking,{ onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     bookingUtilities: BookingUtility[];
 
-    @OneToOne(()=>Review, review=>review.booking) 
+    @OneToOne(()=>Review, review=>review.booking,{ onDelete: 'SET NULL', onUpdate: 'CASCADE' }) 
     review: Review;
 
 

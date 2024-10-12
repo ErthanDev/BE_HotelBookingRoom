@@ -2,13 +2,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
-import { Public, User } from 'src/decorators/customize';
+import { Public, ResponseMessage, Serialize, User } from 'src/decorators/customize';
+import { ReviewResponseDto } from './dto/review-response.dto';
 
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
+  @ResponseMessage('Create review successfully')
+  @Serialize(ReviewResponseDto)
   @Public()
   create(@Body() createReviewDto: CreateReviewDto) {
     return this.reviewsService.create(createReviewDto);
@@ -16,6 +19,7 @@ export class ReviewsController {
 
   @Get()
   @Public()
+
   findAll(@Query() qs: any) {
     return this.reviewsService.findAll(qs);
   }

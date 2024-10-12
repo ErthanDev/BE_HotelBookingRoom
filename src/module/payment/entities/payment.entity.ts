@@ -22,7 +22,7 @@ export class Payment {
     @Column({ type: "enum", enum: PaymentMethod })
     paymentMethod: PaymentMethod;
 
-    @ManyToOne(() => Booking, booking => booking.payments)
+    @ManyToOne(() => Booking, booking => booking.payments,{ onDelete: 'SET NULL', onUpdate: 'CASCADE' })
     @JoinColumn({ name: 'bookingId' })
     booking: Booking;
 

@@ -1,6 +1,6 @@
 import { Booking } from "src/module/booking/entities/booking.entity";
 import { User } from "src/module/users/entities/user.entity";
-import { Column, Entity, Generated, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, Generated, JoinColumn, ManyToMany, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Review {
@@ -14,11 +14,11 @@ export class Review {
     @Column({ type: "text", })
     comment: string;
 
-    @OneToOne(() => Booking, booking => booking.review)
+    @OneToOne(() => Booking, booking => booking.review,{ onDelete: 'SET NULL', onUpdate: 'CASCADE' })
     @JoinColumn({ name: 'bookingId' })
     booking: Booking;
 
-    @OneToOne(() => User, user => user.review)
+    @ManyToOne(() => User, user => user.review,{ onDelete: 'SET NULL', onUpdate: 'CASCADE' })
     @JoinColumn({ name: 'userId' })
     user: User;
 }

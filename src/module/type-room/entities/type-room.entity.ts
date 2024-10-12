@@ -28,6 +28,6 @@ export class TypeRoom {
     @Column({ type: "text" })
     image: string;
 
-    @OneToMany(() => Room, room => room.typeRoom)
+    @OneToMany(() => Room, room => room.typeRoom, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     rooms: Room[];
 }

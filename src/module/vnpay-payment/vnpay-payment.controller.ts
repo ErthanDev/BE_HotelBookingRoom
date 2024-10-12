@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res } from '@nestjs/common';
 import { VnpayPaymentService } from './vnpay-payment.service';
-import { Public, ResponseMessage } from 'src/decorators/customize';
+import { Public, ResponseMessage, Serialize } from 'src/decorators/customize';
+import { PaymentResponseDto } from '../payment/dto/payment-response.dto';
 
 @Controller('vnpay')
 export class VnpayPaymentController {
@@ -14,6 +15,7 @@ export class VnpayPaymentController {
 
   @Get('return')
   @ResponseMessage('Create vnpay payment success')
+  @Serialize(PaymentResponseDto)
   @Public()
   async handleVnpayReturn(@Req() req:any,@Res() res:any) {
     try{
@@ -21,6 +23,7 @@ export class VnpayPaymentController {
       return res.redirect('https://www.facebook.com');
     }
     catch(error){
+      console.log(error);
       return res.redirect('https://www.youtube.com');
     }
   }
