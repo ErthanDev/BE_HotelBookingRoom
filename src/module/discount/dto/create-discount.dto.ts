@@ -6,4 +6,10 @@ export class CreateDiscountDto {
     
     @IsNotEmpty()
     discountPercentage: number;
+
+    @IsNotEmpty()
+    validFrom: Date;
+
+    @IsNotEmpty()
+    validTo: Date;
 }

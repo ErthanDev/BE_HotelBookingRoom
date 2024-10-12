@@ -6,9 +6,10 @@ import { Column, Entity, Generated, JoinColumn, ManyToMany, OneToOne, PrimaryCol
 export class Discount {
     @PrimaryColumn({ type: "uuid" })
     @Generated("uuid")
-    discountId: number;
+    discountId: string;
 
     @Column({ unique: true })
+    @Generated("uuid")
     discountCode: string;
 
     @Column()
