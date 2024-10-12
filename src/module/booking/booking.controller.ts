@@ -30,6 +30,7 @@ export class BookingController {
   @Get('findById/:id')
   @ResponseMessage('Booking fetched successfully')
   @Serialize(BookingResponseDto)
+  @Roles(UserRole.Staff)
   findOne(@Param('id') id: string) {
     return this.bookingService.findOne(id);
   }
