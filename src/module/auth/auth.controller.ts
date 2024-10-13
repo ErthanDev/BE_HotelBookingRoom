@@ -5,10 +5,14 @@ import { Public, ResponseMessage, User } from 'src/decorators/customize';
 import { IUser } from 'src/module/users/user.interface';
 import { RegisterUserDto } from './dto/register-auth.dto';
 import { Request, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private configService: ConfigService 
+  ) { }
   @UseGuards(AuthGuard('local'))
   @ResponseMessage('Login successful')
   @Post('login')
@@ -53,7 +57,13 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuard("facebook"))
   async facebookLoginRedirect(@User() user: IUser, @Res({ passthrough: true }) response: Response) {
-    return this.authService.handleFacebookLogin(user, response);
+    try{
+      await this.authService.handleFacebookLogin(user, response);
+      return response.redirect(this.configService.get<string>('CLIENT_URL'));
+    }catch(error){
+      console.log(error);
+      return response.redirect(`${this.configService.get<string>('CLIENT_URL')}/login`);
+    }
   }
 
 }
