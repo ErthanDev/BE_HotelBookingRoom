@@ -90,40 +90,7 @@ export class BookingService {
     });
     
     return bookingsResponseDto;
-        relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility'],
-    });
-    const fomattedResult = result.map((booking) => {
-        const { refreshToken,password, ...userWithoutToken } = booking.user;
-        return {
-            bookingId: booking.bookingId,
-            bookingDate: booking.bookingDate,
-            startTime: booking.startTime,
-            endTime: booking.endTime,
-            bookingStatus: booking.bookingStatus,
-            bookingType: booking.bookingType,
-            numberOfGuest: booking.numberOfGuest,
-            user: userWithoutToken,
-            room: booking.room,
-            bookingUtilities: booking.bookingUtilities.map((bookingUtility) => {
-                return {
-                  bookingUtilityId: bookingUtility.bookingUtilityId,
-                  utility: bookingUtility.utility.utilityName,
-                  quantity: bookingUtility.quantity,
-                };
-              }
-            ),
-        };
-    });
-    
-    return {
-        meta: {
-            current: +qs.currentPage || 1,
-            pageSize: +qs.limit,
-            pages: totalPages,
-            total: total,
-        },
-        result: fomattedResult,
-    };
+        
   }
 
   async findOne(id: string) {
@@ -189,38 +156,6 @@ export class BookingService {
     });
     
     return bookingsResponseDto;
-    const fomattedResult = result.map((booking) => {
-      const { refreshToken,password, ...userWithoutToken } = booking.user;
-      return {
-          bookingId: booking.bookingId,
-          bookingDate: booking.bookingDate,
-          startTime: booking.startTime,
-          endTime: booking.endTime,
-          bookingStatus: booking.bookingStatus,
-          bookingType: booking.bookingType,
-          numberOfGuest: booking.numberOfGuest,
-          user: userWithoutToken,
-          room: booking.room,
-          bookingUtilities: booking.bookingUtilities.map((bookingUtility) => {
-              return {
-                  bookingUtilityId: bookingUtility.bookingUtilityId,
-                  utility: bookingUtility.utility.utilityName,
-                  quantity: bookingUtility.quantity,
-              };
-            }
-          ),
-      };
-  });
-  
-  return {
-      meta: {
-          current: +qs.currentPage || 1,
-          pageSize: +qs.limit,
-          pages: totalPages,
-          total: total,
-      },
-      result: fomattedResult,
-  };
   }
 
   // update còn lỗi

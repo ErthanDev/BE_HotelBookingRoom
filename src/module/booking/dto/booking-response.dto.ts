@@ -39,7 +39,7 @@ export class BookingResponseDto {
     bookingUtilities: BookingUtilityResponseDto[];
 }  
 
-export class BookingsResponseDto {
+    export class BookingsResponseDto {
     @Expose()
     bookings: BookingResponseDto[];
   
