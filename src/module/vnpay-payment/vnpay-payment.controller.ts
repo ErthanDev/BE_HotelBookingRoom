@@ -20,11 +20,11 @@ export class VnpayPaymentController {
   async handleVnpayReturn(@Req() req:any,@Res() res:any) {
     try{
       await this.vnpayPaymentService.handleVnpayReturn(req);
-      return res.redirect('https://www.facebook.com');
+      return res.redirect('http://localhost:3000/payment/success');
     }
     catch(error){
       console.log(error);
-      return res.redirect('https://www.youtube.com');
+      return res.redirect('http://localhost:3000/payment/fail');
     }
   }
 }

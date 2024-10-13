@@ -4,18 +4,20 @@ import { UpdateSurchargeDto } from './dto/update-surcharge.dto';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Surcharge } from './entities/surcharge.entity';
+import { plainToClass } from 'class-transformer';
+import { SurchargeResponseDto, SurchargesResponseDto } from './dto/surcharge-response.dto';
+import { MetaResponseDto } from 'src/core/meta-response.dto';
 
 @Injectable()
 export class SurchargeService {
   constructor(
     @InjectRepository(Surcharge)
     private surchargeRepository: Repository<Surcharge>,
-  ) {}
+  ) { }
 
   async create(createSurchargeDto: CreateSurchargeDto) {
     const save = this.surchargeRepository.create(createSurchargeDto);
-    await this.surchargeRepository.save(save);
-    return save;
+    return await this.surchargeRepository.save(save);;
   }
 
   async findAll(qs: any) {
@@ -26,21 +28,23 @@ export class SurchargeService {
     const totalItems = await this.surchargeRepository.count();
 
     const totalPages = Math.ceil(totalItems / defaultLimit);
-    
-    const [result, total] = await this.surchargeRepository.findAndCount({
-        take: take || totalItems,
-        skip: skip,
-    });
 
-    return {
-      meta: {
-        current: +qs.currentPage || 1,
-        pageSize: +qs.limit,
-        pages: totalPages,
-        total: total,
-    },
-      result: result,
-    };
+    const [result, total] = await this.surchargeRepository.findAndCount({
+      take: take || totalItems,
+      skip: skip,
+    });
+    const surcharges = plainToClass(SurchargeResponseDto, result);
+    const metaResponseDto = plainToClass(MetaResponseDto, {
+      current: +qs.currentPage || 1,
+      pageSize: +qs.limit || 10,
+      pages: totalPages,
+      total: total,
+    });
+    const response = plainToClass(SurchargesResponseDto, {
+      meta: metaResponseDto,
+      surcharges: surcharges
+    })
+    return response;
   }
 
   async findOne(id: string) {
