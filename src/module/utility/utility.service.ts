@@ -5,6 +5,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Utility } from './entities/utility.entity';
 import { Like, Repository } from 'typeorm';
 import { NotFoundError } from 'rxjs';
+import { plainToClass } from 'class-transformer';
+import { UtilitiesResponseDto, UtilityResponseDto } from './dto/utility-response.dto';
+import { MetaResponseDto } from 'src/core/meta-response.dto';
 
 @Injectable()
 export class UtilityService {
@@ -14,7 +17,7 @@ export class UtilityService {
   ) { }
 
   async create(createUtilityDto: CreateUtilityDto) {
-    const utility = this.utilityRepository.create(createUtilityDto);
+    const utility = await this.utilityRepository.create(createUtilityDto);
     await this.utilityRepository.save(utility);
     return utility;
   }
@@ -35,12 +38,21 @@ export class UtilityService {
         utilityName: keyword ? Like(`%${keyword}%`) : undefined,
       }
     });
-    return {
-      data: result,
-      totalItems: total,
-      currentPage: +qs.currentPage || 1,
-      totalPages: totalPages,
-    };
+
+    const utility = plainToClass(UtilityResponseDto, result);
+    const metaResponseDto = plainToClass(MetaResponseDto, {
+      current: +qs.currentPage || 1,
+      pageSize: +qs.limit || 10,
+      pages: totalPages,
+      total: total,
+    });
+
+    // Tạo RoomsResponseDto
+    const utilitiesResponseDto = plainToClass(UtilitiesResponseDto, {
+      meta: metaResponseDto,
+      utilities: utility,
+    });
+    return utilitiesResponseDto
   }
 
   async findOne(id: string) {
@@ -66,6 +78,5 @@ export class UtilityService {
     const utility = await this.findOne(id);
     await this.utilityRepository.remove(utility);
     return `Utility ${utility.utilityName} removed successfully`;
-    
   }
 }

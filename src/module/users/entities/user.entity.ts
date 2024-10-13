@@ -28,7 +28,7 @@ export class User {
     @OneToMany(() => Booking, booking => booking.user)
     bookings: Booking[];
 
-    @OneToOne(()=> Review, review=>review.user)
+    @OneToMany(()=> Review, review=>review.user)
     review: Review;
 
 }

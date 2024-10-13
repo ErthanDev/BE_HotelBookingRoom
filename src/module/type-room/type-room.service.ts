@@ -4,6 +4,9 @@ import { UpdateTypeRoomDto } from './dto/update-type-room.dto';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeRoom } from './entities/type-room.entity';
+import { plainToClass } from 'class-transformer';
+import { TypeRoomResponseDto } from './dto/type-room-response.dto';
+import { MetaResponseDto } from 'src/core/meta-response.dto';
 
 @Injectable()
 export class TypeRoomService {
@@ -34,16 +37,18 @@ export class TypeRoomService {
         skip: skip
       }
     );
-    
-    return {
-      meta: {
-        current: +qs.currentPage || 1,
-        pageSize: +qs.limit,
-        pages: totalPages,
-        total: total
-      },
-      result
-    }
+    const typeRoom = plainToClass(TypeRoomResponseDto, result);
+    const metaResponseDto = plainToClass(MetaResponseDto, {
+      current: +qs.currentPage || 1,
+      pageSize: +qs.limit || 10,
+      pages: totalPages,
+      total: total,
+    });
+    const typeRoomResponseDto = plainToClass(TypeRoomResponseDto, {
+      typeRooms:typeRoom,
+      meta: metaResponseDto,
+    });
+    return typeRoomResponseDto;
   }
 
  async findOne(id: string) {

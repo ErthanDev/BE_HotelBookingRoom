@@ -54,6 +54,6 @@ export class VnpayPaymentService {
     const discountCode = infoParts.find(part => part.startsWith('discountCode')).split(': ')[1];
     const paymentDto = new CreatePaymentDto(+verify.vnp_Amount, PaymentMethod.Vnpay, bookingId, verify.vnp_TxnRef, discountCode);
     const newPayment = await this.paymentService.createPayment(paymentDto);
-    return { payment: newPayment };
+    return newPayment;
   }
 }

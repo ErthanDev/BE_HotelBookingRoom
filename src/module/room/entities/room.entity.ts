@@ -25,9 +25,9 @@ export class Room {
     @Column({type:"text"})
     facilities: string;
 
-    @ManyToOne(() => TypeRoom, typeRoom => typeRoom.rooms)
+    @ManyToOne(() => TypeRoom, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     typeRoom: TypeRoom;
 
-    @OneToMany(() => Booking, booking => booking.room)
+    @OneToMany(() => Booking, booking => booking.room,{ onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     bookings: Booking[];
 }

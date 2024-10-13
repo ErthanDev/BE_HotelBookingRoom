@@ -7,6 +7,9 @@ import { In, Like, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Room } from '../room/entities/room.entity';
 import { Utility } from '../utility/entities/utility.entity';
+import { plainToClass } from 'class-transformer';
+import { BookingResponseDto, BookingsResponseDto } from './dto/booking-response.dto';
+import { MetaResponseDto } from 'src/core/meta-response.dto';
 import { BookingUtility } from '../booking-utility/entities/booking-utility.entity';
 
 @Injectable()
@@ -70,6 +73,23 @@ export class BookingService {
     const [result, total] = await this.bookingRepository.findAndCount({
         take: take || totalItems,
         skip: skip,
+        relations: ['user', 'room','bookingUtilities', 'bookingUtilities.utility'],
+    });
+    const booking = plainToClass(BookingResponseDto, result);
+    const metaResponseDto = plainToClass(MetaResponseDto, {
+      current: +qs.currentPage || 1,
+      pageSize: +qs.limit || 10,
+      pages: totalPages,
+      total: total,
+    });
+
+    // Tạo RoomsResponseDto
+    const bookingsResponseDto = plainToClass(BookingsResponseDto, {
+      meta: metaResponseDto,
+      bookings: booking,
+    });
+    
+    return bookingsResponseDto;
         relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility'],
     });
     const fomattedResult = result.map((booking) => {
@@ -140,7 +160,6 @@ export class BookingService {
   async findMyBooking(userId: string, qs: any) {
     const take = +qs.limit || 10;
     const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const keyword = qs.keyword || '';
     const defaultLimit = +qs.limit ? +qs.limit : 10;
 
     const totalItems = await this.bookingRepository.count();
@@ -151,10 +170,25 @@ export class BookingService {
     const [result, total] = await this.bookingRepository.findAndCount({
         take: take || totalItems,
         skip: skip,
-        relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility'],
+        relations: ['user', 'room','bookingUtilities', 'bookingUtilities.utility'],
         where: { user: user }
     });
 
+    const booking = plainToClass(BookingResponseDto, result);
+    const metaResponseDto = plainToClass(MetaResponseDto, {
+      current: +qs.currentPage || 1,
+      pageSize: +qs.limit || 10,
+      pages: totalPages,
+      total: total,
+    });
+
+    // Tạo RoomsResponseDto
+    const bookingsResponseDto = plainToClass(BookingsResponseDto, {
+      meta: metaResponseDto,
+      bookings: booking,
+    });
+    
+    return bookingsResponseDto;
     const fomattedResult = result.map((booking) => {
       const { refreshToken,password, ...userWithoutToken } = booking.user;
       return {

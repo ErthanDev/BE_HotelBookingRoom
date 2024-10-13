@@ -79,25 +79,8 @@ export class PaymentService {
     }, 0);  // Đưa vào queue thực hiện ngay khi có thể
 
     // Extract user information without refreshToken
-    const { refreshToken, password, ...userWithoutToken } = booking.user;
 
-    return {
-      amount: savedPayment.amount,
-      paymentMethod: savedPayment.paymentMethod,
-      booking: {
-        bookingId: booking.bookingId,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        bookingType: booking.bookingType,
-        bookingStatus: booking.bookingStatus,
-        bookingDate: booking.bookingDate,
-        numberOfGuest: booking.numberOfGuest,
-        user: userWithoutToken,
-      },
-      paymentId: savedPayment.paymentId,
-      paymentDate: savedPayment.paymentDate,
-      paymentStatus: savedPayment.paymentStatus,
-    };
+    return savedPayment
   }
 
   async refundPayment(paymentId: string) {
@@ -134,30 +117,11 @@ export class PaymentService {
 
     payment.paymentStatus = PaymentStatus.Refund;
     payment.amount = payment.amount - (payment.amount * refundPercentage / 100); // Tính lại số tiền hoàn
-    await this.paymentRepository.save(payment);
-
-    return {
-      paymentId: payment.paymentId,
-      paymentStatus: payment.paymentStatus,
-      amount: payment.amount,
-      paymentMethod: payment.paymentMethod,
-      booking: {
-        bookingId: booking.bookingId,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        bookingType: booking.bookingType,
-        bookingStatus: booking.bookingStatus,
-        bookingDate: booking.bookingDate,
-        numberOfGuest: booking.numberOfGuest,
-      },
-    };
+    return await this.paymentRepository.save(payment);
   }
 
 
-  async findAll() {
-    return await this.paymentRepository.find();
-  }
-
+  
   async getRevenueByDay(startDate: string, endDate: string) {
     const payments = await this.paymentRepository
       .createQueryBuilder('payment')

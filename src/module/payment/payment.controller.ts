@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Query } from '@
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { Public, ResponseMessage, Roles } from 'src/decorators/customize';
+import { Public, ResponseMessage, Roles, Serialize } from 'src/decorators/customize';
 import { UserRole } from 'src/enum/userRole.enum';
+import { PaymentResponseDto, PaymentsResponseDto } from './dto/payment-response.dto';
 
 @Controller('payment')
 export class PaymentController {
@@ -11,23 +12,20 @@ export class PaymentController {
 
   @Patch(':id')
   @ResponseMessage('Refund successfully')
+  @Public()
+  @Serialize(PaymentResponseDto)
   refund(@Param('id') id: string) {
     return this.paymentService.refundPayment(id);
   }
   
   @Post()
   @ResponseMessage('Create payment successfully')
-  @Roles(UserRole.Staff)
+  @Serialize(PaymentResponseDto)
+  @Public()
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentService.createPayment(createPaymentDto);
   }
 
-  @Get()
-  @ResponseMessage('Get all payment successfully')
-  @Roles(UserRole.Staff)
-  findAll(){
-    return this.paymentService.findAll();
-  }
 
   @Get('revenue/daily')
   @Roles(UserRole.Staff)
