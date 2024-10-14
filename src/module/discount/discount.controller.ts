@@ -26,12 +26,11 @@ export class DiscountController {
     return this.discountService.findAll(qs);
   }
 
-  @Get(':id')
-  @Roles(UserRole.Staff)
+  @Get(':code')
   @Serialize(DiscountResponseDto)
   @ResponseMessage('Discount fetched successfully')
-  findOne(@Param('id') id: string) {
-    return this.discountService.findOne(id);
+  findOne(@Param('code') code: string) {
+    return this.discountService.findOne(code);
   }
 
   @Patch(':id')

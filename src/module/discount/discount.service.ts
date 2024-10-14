@@ -50,9 +50,9 @@ export class DiscountService {
     return response;
   }
 
-  async findOne(id: string) {
+  async findOne(code: string) {
     const discount = await this.discountRepository.findOne({
-      where: { discountId: id }
+      where: { discountCode: code },
     });
     if (!discount) {
       throw new NotFoundException('Discount not found');
