@@ -29,7 +29,6 @@ async function bootstrap() {
     type: VersioningType.URI
   });
   app.use(cookieParser());
-  app.use(helmet());
   app.enableCors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
@@ -37,6 +36,7 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
+  app.use(helmet());
   await app.listen(port || 3000).then(async () => {
     console.log(`Application is running on: ${await app.getUrl()}`);
   }).catch((error) => {

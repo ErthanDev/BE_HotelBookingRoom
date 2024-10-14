@@ -81,13 +81,12 @@ export class UsersService {
   }
 
   async register(createUserDto: RegisterUserDto) {
-    const hash = await bcrypt.hash(createUserDto.password, 10);
     const existUser = await this.checkUserExists(createUserDto.email)
 
     if (existUser) {
       throw new NotFoundException(`User with email ${createUserDto.email} already exists`);
     }
-
+    const hash = await bcrypt.hash(createUserDto.password, 10);
     const newUser = this.usersRepository.create({
       name: createUserDto.name,
       email: createUserDto.email,

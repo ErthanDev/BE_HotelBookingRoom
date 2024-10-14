@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Profile, Strategy } from "passport-facebook";
 import { UsersService } from "src/module/users/users.service";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
@@ -14,7 +15,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
 
       clientID: configService.get<string>("FACEBOOK_APP_ID"),
       clientSecret: configService.get<string>("FACEBOOK_APP_SECRET"),
-      callbackURL: `${configService.get<string>("CLIENT_URL")}/api/v1/auth/facebook/redirect`,
+      callbackURL: `${configService.get<string>("FACEBOOK_CALLBACK_URL")}`,
       scope: "email",
       profileFields: ["emails", "name"],
     });
@@ -30,10 +31,11 @@ export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
 
     const user = await this.usersService.checkUserExists(emails[0].value);
     if (!user) {
+      const hash = await bcrypt.hash("123456", 10);
       const newUser = await this.usersService.register({
         name: name.familyName + " " + name.middleName + " " + name.givenName,
         email: emails[0].value,
-        password: "123456",
+        password: hash,
         phoneNumber: "",
         address: "",
         gender: true

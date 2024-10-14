@@ -45,19 +45,7 @@ export class BookingService {
       bookingType,
       numberOfGuest: numberOfGuest,
     });
-    await this.bookingRepository.save(booking);
-    const { refreshToken,password, ...userWithoutToken } = booking.user;
-    return {
-      bookingId: booking.bookingId,
-      bookingDate: booking.bookingDate,
-      startTime: booking.startTime,
-      endTime: booking.endTime,
-      bookingStatus: booking.bookingStatus,
-      bookingType: booking.bookingType,
-      numberOfGuest: booking.numberOfGuest,
-      user: userWithoutToken,
-      room: booking.room,
-    };
+    return await this.bookingRepository.save(booking);
   }
 
   async findAll(qs: any) {
@@ -102,26 +90,8 @@ export class BookingService {
     if (!booking) {
       throw new NotFoundException(`Booking not found`);
     }
-    const { refreshToken,password, ...userWithoutToken } = booking.user;
-    return {
-      bookingId: booking.bookingId,
-      bookingDate: booking.bookingDate,
-      startTime: booking.startTime,
-      endTime: booking.endTime,
-      bookingStatus: booking.bookingStatus,
-      bookingType: booking.bookingType,
-      numberOfGuest: booking.numberOfGuest,
-      user: userWithoutToken,
-      room: booking.room,
-      bookingUtilities: booking.bookingUtilities.map((bookingUtility) => {
-        return {
-          bookingUtilityId: bookingUtility.bookingUtilityId,
-          utility: bookingUtility.utility.utilityName,
-          quantity: bookingUtility.quantity,
-        };
-      }
-      ),
-    };
+  
+    return booking
   }
 
   async findMyBooking(userId: string, qs: any) {
@@ -158,10 +128,7 @@ export class BookingService {
     return bookingsResponseDto;
   }
 
-  // update còn lỗi
   async update(id: string, updateBookingDto: UpdateBookingDto) {
-    // const bookingStatus = updateBookingDto.bookingStatus;
-    // const utilities = updateBookingDto.utilities;
     const { bookingStatus } = updateBookingDto;
     if (!Array.isArray(updateBookingDto.utilities)) {
       throw new Error('utilities must be an array');

@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private configService: ConfigService 
+    private configService: ConfigService
   ) { }
   @UseGuards(AuthGuard('local'))
   @ResponseMessage('Login successful')
@@ -57,10 +57,10 @@ export class AuthController {
   @Public()
   @UseGuards(AuthGuard("facebook"))
   async facebookLoginRedirect(@User() user: IUser, @Res({ passthrough: true }) response: Response) {
-    try{
+    try {
       await this.authService.handleFacebookLogin(user, response);
       return response.redirect(this.configService.get<string>('CLIENT_URL'));
-    }catch(error){
+    } catch (error) {
       console.log(error);
       return response.redirect(`${this.configService.get<string>('CLIENT_URL')}/login`);
     }

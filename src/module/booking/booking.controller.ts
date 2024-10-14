@@ -23,6 +23,7 @@ export class BookingController {
   @Get('findAll')
   @Serialize(BookingsResponseDto)
   @ResponseMessage('Booking fetched successfully')
+  @Roles(UserRole.Staff)
   findAll(@Query() qs: any) {
     return this.bookingService.findAll(qs);
   }
@@ -30,7 +31,6 @@ export class BookingController {
   @Get('findById/:id')
   @ResponseMessage('Booking fetched successfully')
   @Serialize(BookingResponseDto)
-  @Roles(UserRole.Staff)
   findOne(@Param('id') id: string) {
     return this.bookingService.findOne(id);
   }
@@ -45,6 +45,7 @@ export class BookingController {
   @Patch(':id')
   @Serialize(BookingResponseDto)
   @ResponseMessage('Booking updated fetch successfully')
+  @Roles(UserRole.Staff)
   update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
     return this.bookingService.update(id, updateBookingDto);
   }
