@@ -12,16 +12,15 @@ export class PaymentController {
 
   @Patch(':id')
   @ResponseMessage('Refund successfully')
-  @Public()
   @Serialize(PaymentResponseDto)
   refund(@Param('id') id: string) {
     return this.paymentService.refundPayment(id);
   }
-  
+
   @Post()
   @ResponseMessage('Create payment successfully')
   @Serialize(PaymentResponseDto)
-  @Public()
+  @Roles(UserRole.Staff)
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentService.createPayment(createPaymentDto);
   }
@@ -30,21 +29,20 @@ export class PaymentController {
   @Get('revenue/daily')
   @Roles(UserRole.Staff)
   @ResponseMessage('Get daily revenue successfully')
-  getDailyRevenue(@Query('startDate') startDate: string, @Query('endDate') endDate: string) {
-    return this.paymentService.getRevenueByDay(startDate, endDate);
+  getDailyRevenue(@Query('startDate') startDate: string) {
+    return this.paymentService.getRevenueByDay(startDate);
   }
 
   @Get('revenue/monthly')
   @Roles(UserRole.Staff)
   @ResponseMessage('Get monthly revenue successfully')
-  getMonthlyRevenue(@Query('year') year:number) {
+  getMonthlyRevenue(@Query('year') year: number) {
     return this.paymentService.getRevenueByMonth(year);
   }
 
   @Get('revenue/yearly')
   @Roles(UserRole.Staff)
   @ResponseMessage('Get yearly revenue successfully')
-  @Public()
   getYearlyRevenue() {
     return this.paymentService.getRevenueByYear();
   }

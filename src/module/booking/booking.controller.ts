@@ -7,6 +7,7 @@ import { use } from 'passport';
 import { UserRole } from 'src/enum/userRole.enum';
 import { IUser } from '../users/user.interface';
 import { BookingResponseDto, BookingsResponseDto } from './dto/booking-response.dto';
+import { BookingStatus } from 'src/enum/bookingStatus.enum';
 
 @Controller('booking')
 export class BookingController {
@@ -17,7 +18,7 @@ export class BookingController {
   @Serialize(BookingResponseDto)
   create(@Body() createBookingDto: CreateBookingDto, @User() user: IUser) {
     createBookingDto.userId = user.id;
-    return this.bookingService.create(createBookingDto);
+    return this.bookingService.createMyBooking(createBookingDto);
   }
 
   @Get('findAll')
@@ -56,5 +57,21 @@ export class BookingController {
   @Roles(UserRole.Staff)
   remove(@Param('id') id: string) {
     return this.bookingService.remove(id);
+  }
+
+  @Get('findBookingByStatus')
+  @Serialize(BookingsResponseDto)
+  @Roles(UserRole.Staff)
+  @ResponseMessage('Booking fetched successfully')
+  findBookingByStatus(@Query('status') status: BookingStatus, @Query() qs: any) {
+    return this.bookingService.findBookingByStatus(status, qs);
+  }
+
+
+  @Get('findBookingToday')
+  @Serialize(BookingsResponseDto)
+  @ResponseMessage('Booking fetched successfully')
+  findBookingToday(@Query() qs: any) {
+    return this.bookingService.findBookingToday(qs);
   }
 }

@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseMessage, Roles } from 'src/decorators/customize';
-import { UserRole } from 'src/enum/userRole.enum';
+import { ResponseMessage, Roles } from '../../decorators/customize';
+import { UserRole } from '../../enum/userRole.enum';
 
 @Controller('users')
 export class UsersController {

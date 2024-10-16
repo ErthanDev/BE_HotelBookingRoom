@@ -122,14 +122,14 @@ export class PaymentService {
 
 
   
-  async getRevenueByDay(startDate: string, endDate: string) {
+  async getRevenueByDay(startDate: string) {
     const payments = await this.paymentRepository
       .createQueryBuilder('payment')
       .select("DATE(payment.paymentDate)", "date")  // Nhóm theo ngày
       .addSelect("SUM(payment.amount)", "totalRevenue")  // Tính tổng doanh thu cho mỗi ngày
       .where("payment.paymentDate BETWEEN :startDate AND :endDate", {
         startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        endDate: new Date(),
       })
       .groupBy("DATE(payment.paymentDate)")  // Nhóm kết quả theo ngày
       .getRawMany();  // Trả về kết quả thô

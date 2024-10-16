@@ -1,7 +1,7 @@
 
 import { createParamDecorator, ExecutionContext, SetMetadata, UseInterceptors } from '@nestjs/common';
-import { ClassContrustor, SerializeInterceptor } from 'src/core/serialize.interceptor';
-import { UserRole } from 'src/enum/userRole.enum';
+import { ClassContrustor, SerializeInterceptor } from '../core/serialize.interceptor';
+import { UserRole } from '../enum/userRole.enum';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);

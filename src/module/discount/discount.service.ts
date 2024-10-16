@@ -6,7 +6,7 @@ import { Discount } from './entities/discount.entity';
 import { Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { DiscountResponseDto, DiscountsResponseDto } from './dto/discount-response.dto';
-import { MetaResponseDto } from 'src/core/meta-response.dto';
+import { MetaResponseDto } from '../../core/meta-response.dto';
 
 @Injectable()
 export class DiscountService {

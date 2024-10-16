@@ -1,7 +1,7 @@
-import { Booking } from "src/module/booking/entities/booking.entity";
+import { Booking } from "../../booking/entities/booking.entity";
 import { UserRole } from "src/enum/userRole.enum";
 import { Column, Entity, Generated, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, Unique } from "typeorm";
-import { Review } from "src/module/reviews/entities/review.entity";
+import { Review } from "../../reviews/entities/review.entity";
 
 @Entity()
 export class User {

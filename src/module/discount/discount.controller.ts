@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query } from '@
 import { DiscountService } from './discount.service';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
-import { Public, ResponseMessage, Roles, Serialize } from 'src/decorators/customize';
-import { UserRole } from 'src/enum/userRole.enum';
+import { Public, ResponseMessage, Roles, Serialize } from '../../decorators/customize';
+import { UserRole } from '../../enum/userRole.enum';
 import { DiscountResponseDto, DiscountsResponseDto } from './dto/discount-response.dto';
 
 @Controller('discount')

@@ -1,5 +1,5 @@
-import { DiscountStatus } from "src/enum/discountStatus.enum";
-import { Payment } from "src/module/payment/entities/payment.entity";
+
+import { DiscountStatus } from "../../../enum/discountStatus.enum";
 import { Column, Entity, Generated, JoinColumn, ManyToMany, OneToOne, PrimaryColumn } from "typeorm";
 
 @Entity()

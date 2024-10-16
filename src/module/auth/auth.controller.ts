@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { Public, ResponseMessage, User } from 'src/decorators/customize';
-import { IUser } from 'src/module/users/user.interface';
+import { Public, ResponseMessage, User } from '../../decorators/customize';
+import { IUser } from '../users/user.interface';
 import { RegisterUserDto } from './dto/register-auth.dto';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';

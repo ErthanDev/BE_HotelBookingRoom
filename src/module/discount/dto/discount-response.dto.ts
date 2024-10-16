@@ -1,6 +1,6 @@
 import { Expose } from "class-transformer";
-import { MetaResponseDto } from "src/core/meta-response.dto";
-import { DiscountStatus } from "src/enum/discountStatus.enum";
+import { MetaResponseDto } from "../../../core/meta-response.dto";
+import { DiscountStatus } from "../../../enum/discountStatus.enum";
 
 export class DiscountResponseDto {
     @Expose()
