@@ -31,7 +31,7 @@ export class Booking {
     @Column({ type: 'int' })
     numberOfGuest: number;
 
-    @ManyToOne(() => User, user => user.bookings,{ onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    @ManyToOne(() => User, user => user.bookings,{nullable:true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     user: User
 
     @ManyToOne(() => Room, room => room.bookings,{ onDelete: 'CASCADE', onUpdate: 'CASCADE' })

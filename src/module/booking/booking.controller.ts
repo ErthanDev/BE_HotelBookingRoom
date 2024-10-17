@@ -13,10 +13,10 @@ import { BookingStatus } from 'src/enum/bookingStatus.enum';
 export class BookingController {
   constructor(private readonly bookingService: BookingService) { }
 
-  @Post()
+  @Post("my-booking")
   @ResponseMessage('Booking created successfully')
   @Serialize(BookingResponseDto)
-  create(@Body() createBookingDto: CreateBookingDto, @User() user: IUser) {
+  createMyBooking(@Body() createBookingDto: CreateBookingDto, @User() user: IUser) {
     createBookingDto.userId = user.id;
     return this.bookingService.createMyBooking(createBookingDto);
   }
@@ -73,5 +73,13 @@ export class BookingController {
   @ResponseMessage('Booking fetched successfully')
   findBookingToday(@Query() qs: any) {
     return this.bookingService.findBookingToday(qs);
+  }
+
+  @Post()
+  @Serialize(BookingResponseDto)
+  @ResponseMessage('Booking created successfully')
+  @Roles(UserRole.Staff)
+  create(@Body() createBookingDto: CreateBookingDto) {
+    return this.bookingService.create(createBookingDto);
   }
 }

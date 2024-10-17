@@ -64,7 +64,6 @@ export class BookingService {
   async findAll(qs: any) {
     const take = +qs.limit || 10;
     const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const keyword = qs.keyword || '';
     const defaultLimit = +qs.limit ? +qs.limit : 10;
 
     const totalItems = await this.bookingRepository.count();
@@ -262,5 +261,34 @@ export class BookingService {
     });
     
     return bookingsResponseDto;
+  }
+
+  async create(createBookingDto: CreateBookingDto) {
+    const { roomId, startTime, endTime, bookingType, numberOfGuest } = createBookingDto;
+    
+    const room = await this.roomRepository.findOne({ where: { id:roomId } });
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+    const existingBooking = await this.bookingRepository.findOne({
+      where: {
+        room,
+        startTime: LessThan(endTime),
+        endTime: MoreThan(startTime),
+      },
+    });
+  
+    if (existingBooking) {
+      throw new ConflictException('The room is already booked for this time slot');
+    }
+  
+    const booking = this.bookingRepository.create({
+      room,
+      startTime,
+      endTime,
+      bookingType,
+      numberOfGuest: numberOfGuest,
+    });
+    return await this.bookingRepository.save(booking);
   }
 }

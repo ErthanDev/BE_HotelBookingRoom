@@ -50,7 +50,7 @@ export class RoomController {
     return this.roomService.remove(+id);
   }
 
-  @Get('available/room')
+  @Get('available/search')
   @ResponseMessage('Get room available successfully')
   @Public()
   @Serialize(RoomsResponseDto)
@@ -64,5 +64,13 @@ export class RoomController {
   @Serialize(RoomsResponseDto)
   getRoomByTypeRoom(@Param('id') id: string,@Query() qs:any) {
     return this.roomService.getRoomByTypeRoomId(id,qs);
+  }
+
+  @Get('available/now')
+  @Public()
+  @ResponseMessage('Get room available now successfully')
+  @Serialize(RoomsResponseDto)
+  getRoomAvailableNow(@Query() qs:any) {
+    return this.roomService.getRoomAvailableNow(qs);
   }
 }
