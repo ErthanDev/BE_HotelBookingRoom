@@ -9,6 +9,7 @@ import { JwtAuthGuard } from './module/auth/guard/jwt-auth.guard';
 import { RolesGuard } from './module/auth/guard/roles.guard';
 import helmet from 'helmet';
 import { join } from 'path';
+import * as passport from 'passport';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
@@ -23,6 +24,7 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('hbs');
+  app.use(passport.initialize());
   app.setGlobalPrefix('/api/');
   app.enableVersioning({
     defaultVersion: '1',

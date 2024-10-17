@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req, HttpStatus, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req, HttpStatus, ValidationPipe, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Public, ResponseMessage, User } from '../../decorators/customize';
@@ -45,25 +45,17 @@ export class AuthController {
     return this.authService.handleRefreshToken(refresh_token, response);
   }
 
-  @Get("/facebook")
-  @UseGuards(AuthGuard("facebook"))
-  @Public()
-  async facebookLogin(): Promise<any> {
-    return HttpStatus.OK;
-  }
 
-  @Get("/facebook/redirect")
-  @ResponseMessage('Facebook login successful')
+
+  @Get('facebook')
+  @UseGuards(AuthGuard('facebook-token'))
   @Public()
-  @UseGuards(AuthGuard("facebook"))
-  async facebookLoginRedirect(@User() user: IUser, @Res({ passthrough: true }) response: Response) {
+  @ResponseMessage('Login with facebook successful')
+  async getTokenAfterFacebookSignIn(@User() user: IUser, @Res({ passthrough: true }) response: Response) {
     try {
-      await this.authService.handleFacebookLogin(user, response);
-      return response.redirect(this.configService.get<string>('CLIENT_URL'));
+      return await this.authService.handleFacebookLogin(user, response);
     } catch (error) {
-      console.log(error);
-      return response.redirect(`${this.configService.get<string>('CLIENT_URL')}/login`);
+      throw new BadRequestException(error);
     }
   }
-
 }

@@ -4,18 +4,16 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Profile, Strategy } from "passport-facebook";
 import { UsersService } from "src/module/users/users.service";
 import * as bcrypt from 'bcrypt';
-
+import * as FacebookTokenStrategy from 'passport-facebook-token';
 @Injectable()
-export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
+export class FacebookStrategy extends PassportStrategy(FacebookTokenStrategy, "facebook-token") {
   constructor(
     private configService: ConfigService,
     private usersService: UsersService
   ) {
     super({
-
       clientID: configService.get<string>("FACEBOOK_APP_ID"),
       clientSecret: configService.get<string>("FACEBOOK_APP_SECRET"),
-      callbackURL: `${configService.get<string>("FACEBOOK_CALLBACK_URL")}`,
       scope: "email",
       profileFields: ["emails", "name"],
     });

@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from './entities/booking.entity';
-import { Between, In, Like, Repository } from 'typeorm';
+import { Between, In, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Room } from '../room/entities/room.entity';
 import { Utility } from '../utility/entities/utility.entity';
@@ -38,6 +38,18 @@ export class BookingService {
     if (!room) {
       throw new NotFoundException('Room not found');
     }
+    const existingBooking = await this.bookingRepository.findOne({
+      where: {
+        room,
+        startTime: LessThan(endTime),
+        endTime: MoreThan(startTime),
+      },
+    });
+  
+    if (existingBooking) {
+      throw new ConflictException('The room is already booked for this time slot');
+    }
+  
     const booking = this.bookingRepository.create({
       user,
       room,
