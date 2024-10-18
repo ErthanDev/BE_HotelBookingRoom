@@ -58,4 +58,11 @@ export class AuthController {
       throw new BadRequestException(error);
     }
   }
+
+
+  @Post('logout')
+  @ResponseMessage('Logout successful')
+  async logout(@User() user: IUser, @Res({ passthrough: true }) response: Response) {
+    return this.authService.logout(user, response);
+  }
 }
