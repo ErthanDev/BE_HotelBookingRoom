@@ -6,6 +6,8 @@ import { IUser } from '../users/user.interface';
 import { RegisterUserDto } from './dto/register-auth.dto';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { LocalAuthGuard } from './guard/local.guard';
+import { LoginAuthDto } from './dto/login-auth-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,14 +15,16 @@ export class AuthController {
     private authService: AuthService,
     private configService: ConfigService
   ) { }
-  @UseGuards(AuthGuard('local'))
   @ResponseMessage('Login successful')
   @Post('login')
+  @UseGuards(LocalAuthGuard)
   @Public()
   async login(
+    @Body(new ValidationPipe()) loginDto: LoginAuthDto, // Dùng DTO để kiểm tra dữ liệu đầu vào
     @User() user: IUser,
     @Res({ passthrough: true }) response: Response
   ) {
+
     return this.authService.handleLogin(user, response);
   }
 
@@ -47,7 +51,7 @@ export class AuthController {
 
 
 
-  @Get('facebook')
+  @Post('facebook')
   @UseGuards(AuthGuard('facebook-token'))
   @Public()
   @ResponseMessage('Login with facebook successful')
