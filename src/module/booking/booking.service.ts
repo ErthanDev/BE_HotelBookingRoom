@@ -30,11 +30,11 @@ export class BookingService {
 
   async createMyBooking(createBookingDto: CreateBookingDto) {
     const { userId, roomId, startTime, endTime, bookingType, numberOfGuest } = createBookingDto;
-    const user = await this.userRepository.findOne({ where: { id:userId } });
+    const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const room = await this.roomRepository.findOne({ where: { id:roomId } });
+    const room = await this.roomRepository.findOne({ where: { id: roomId } });
     if (!room) {
       throw new NotFoundException('Room not found');
     }
@@ -45,11 +45,11 @@ export class BookingService {
         endTime: MoreThan(startTime),
       },
     });
-  
+
     if (existingBooking) {
       throw new ConflictException('The room is already booked for this time slot');
     }
-  
+
     const booking = this.bookingRepository.create({
       user,
       room,
@@ -69,14 +69,14 @@ export class BookingService {
     const totalItems = await this.bookingRepository.count();
 
     const totalPages = Math.ceil(totalItems / defaultLimit);
-    
+
     const [result, total] = await this.bookingRepository.findAndCount({
-        take: take || totalItems,
-        skip: skip,
-        relations: ['user', 'room','bookingUtilities', 'bookingUtilities.utility'],
-        order: {
-          bookingDate: 'DESC'  // Sắp xếp theo ngày đặt mới nhất trước
-        }
+      take: take || totalItems,
+      skip: skip,
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility', 'room.typeRoom'],
+      order: {
+        bookingDate: 'DESC'  // Sắp xếp theo ngày đặt mới nhất trước
+      }
     });
     const booking = plainToClass(BookingResponseDto, result);
     const metaResponseDto = plainToClass(MetaResponseDto, {
@@ -91,21 +91,21 @@ export class BookingService {
       meta: metaResponseDto,
       bookings: booking,
     });
-    
+
     return bookingsResponseDto;
-        
+
   }
 
   async findOne(id: string) {
     const booking = await this.bookingRepository.findOne({
       where: { bookingId: id },
-      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility'],
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility', 'room.typeRoom'],
     });
 
     if (!booking) {
       throw new NotFoundException(`Booking not found`);
     }
-  
+
     return booking
   }
 
@@ -116,17 +116,17 @@ export class BookingService {
 
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
-    
+
     const [result, total] = await this.bookingRepository.findAndCount({
-        take: take ,
-        skip: skip,
-        relations: ['user', 'room','bookingUtilities', 'bookingUtilities.utility'],
-        where: { user: user },
-        order: {
-          bookingDate: 'DESC'  // Sắp xếp theo ngày đặt mới nhất trước
-        }
+      take: take,
+      skip: skip,
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility'],
+      where: { user: user },
+      order: {
+        bookingDate: 'DESC'  // Sắp xếp theo ngày đặt mới nhất trước
+      }
     });
-    const totalPages = Math.ceil(total/ defaultLimit);
+    const totalPages = Math.ceil(total / defaultLimit);
 
     const booking = plainToClass(BookingResponseDto, result);
     const metaResponseDto = plainToClass(MetaResponseDto, {
@@ -141,7 +141,7 @@ export class BookingService {
       meta: metaResponseDto,
       bookings: booking,
     });
-    
+
     return bookingsResponseDto;
   }
 
@@ -150,30 +150,30 @@ export class BookingService {
     if (!Array.isArray(updateBookingDto.utilities)) {
       throw new Error('utilities must be an array');
     }
-    const booking = await this.bookingRepository.findOne({ where: { bookingId: id }});
+    const booking = await this.bookingRepository.findOne({ where: { bookingId: id } });
 
-    for(const utility of updateBookingDto.utilities) {
-      const utilityExist = await this.utilityRepository.findOne({ where: { utilityId:  utility.utilityId} });
+    for (const utility of updateBookingDto.utilities) {
+      const utilityExist = await this.utilityRepository.findOne({ where: { utilityId: utility.utilityId } });
       const bookingUtilityExist = await this.bookingUtilityRepository.findOne({ where: { booking: booking, utility: utilityExist } });
-      if(bookingUtilityExist) {
-          if(utility.quantity === 0) {
-            await this.bookingUtilityRepository.delete(bookingUtilityExist);
-          } else {
-            await this.bookingUtilityRepository.update(bookingUtilityExist.bookingUtilityId, { quantity: utility.quantity });
-          }
-    } else {
-      if(utility.quantity > 0) {
-        const bookingUtility = this.bookingUtilityRepository.create({
-          booking,
-          utility: utilityExist,
-          quantity: utility.quantity,
-        });
-        await this.bookingUtilityRepository.save(bookingUtility);
+      if (bookingUtilityExist) {
+        if (utility.quantity === 0) {
+          await this.bookingUtilityRepository.delete(bookingUtilityExist);
+        } else {
+          await this.bookingUtilityRepository.update(bookingUtilityExist.bookingUtilityId, { quantity: utility.quantity });
+        }
+      } else {
+        if (utility.quantity > 0) {
+          const bookingUtility = this.bookingUtilityRepository.create({
+            booking,
+            utility: utilityExist,
+            quantity: utility.quantity,
+          });
+          await this.bookingUtilityRepository.save(bookingUtility);
+        }
       }
     }
-  }
     if (bookingStatus) {
-      await this.bookingRepository.update(id, {bookingStatus});
+      await this.bookingRepository.update(id, { bookingStatus });
     }
     return await this.findOne(id);
   }
@@ -182,14 +182,14 @@ export class BookingService {
   async remove(id: string) {
     const booking = await this.findOne(id);
     // xóa bookingUtility trước rồi mới xóa booking đc
-    for(const bookingUtility of booking.bookingUtilities) {
+    for (const bookingUtility of booking.bookingUtilities) {
       await this.bookingUtilityRepository.delete(bookingUtility.bookingUtilityId);
     }
     await this.bookingRepository.delete(id);
     return booking;
   }
 
-  async findBookingByStatus(status:BookingStatus, qs: any) {
+  async findBookingByStatus(status: BookingStatus, qs: any) {
     const take = +qs.limit || 10;
     const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
     const defaultLimit = +qs.limit ? +qs.limit : 10;
@@ -198,10 +198,10 @@ export class BookingService {
 
 
     const [result, total] = await this.bookingRepository.findAndCount({
-      take: take ,
-      skip: skip  ,
+      take: take,
+      skip: skip,
       where: { bookingStatus: status },
-      relations: ['user', 'room','bookingUtilities', 'bookingUtilities.utility'],
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility'],
       order: {
         bookingDate: 'DESC'  // Sắp xếp theo ngày đặt mới nhất trước
       }
@@ -222,7 +222,7 @@ export class BookingService {
       meta: metaResponseDto,
       bookings: bookingResponse,
     });
-    
+
     return bookingsResponseDto;
   }
 
@@ -237,12 +237,12 @@ export class BookingService {
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1)
     const [result, total] = await this.bookingRepository.findAndCount({
-      take: take ,
-      skip: skip  ,
+      take: take,
+      skip: skip,
       where: {
         startTime: Between(today, tomorrow), // Lọc các booking trong khoảng từ hôm nay đến ngày mai
       },
-      relations: ['user', 'room','bookingUtilities', 'bookingUtilities.utility'],
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility'],
     });
     const totalPages = Math.ceil(total / defaultLimit);
 
@@ -259,14 +259,14 @@ export class BookingService {
       meta: metaResponseDto,
       bookings: bookingResponse,
     });
-    
+
     return bookingsResponseDto;
   }
 
   async create(createBookingDto: CreateBookingDto) {
     const { roomId, startTime, endTime, bookingType, numberOfGuest } = createBookingDto;
-    
-    const room = await this.roomRepository.findOne({ where: { id:roomId } });
+
+    const room = await this.roomRepository.findOne({ where: { id: roomId } });
     if (!room) {
       throw new NotFoundException('Room not found');
     }
@@ -277,11 +277,11 @@ export class BookingService {
         endTime: MoreThan(startTime),
       },
     });
-  
+
     if (existingBooking) {
       throw new ConflictException('The room is already booked for this time slot');
     }
-  
+
     const booking = this.bookingRepository.create({
       room,
       startTime,
