@@ -97,7 +97,7 @@ export class AuthService {
       response.clearCookie("refresh_token")
       response.cookie('refresh_token', new_refresh_token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: this.configService.get<string>('NODE_ENV') === 'production', 
         maxAge: +ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')),
         sameSite: 'none'
       })
@@ -131,7 +131,7 @@ export class AuthService {
     await this.usersService.updateUserToken(id, refresh_token)
     response.cookie('refresh_token', refresh_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: this.configService.get<string>('NODE_ENV') === 'production', 
       maxAge: +ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')),
       sameSite: 'none'
     })
