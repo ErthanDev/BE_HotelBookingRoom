@@ -121,7 +121,7 @@ export class AuthService {
   }
 
   async handleFacebookLogin(user: IUser, response: Response) {
-    const { id, name, email, role, phoneNumber, address, phoneNumber } = user;
+    const { id, name, email, role, phoneNumber, address} = user;
     const payload = {
       sub: "token login",
       iss: "from server",
