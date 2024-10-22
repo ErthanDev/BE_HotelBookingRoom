@@ -130,7 +130,7 @@ export class RoomService {
       .leftJoinAndSelect('room.bookings', 'booking')
       .leftJoinAndSelect('room.typeRoom', 'typeRoom')
       .where(
-        'booking.startTime IS NULL OR (booking.endTime <= :startTime OR booking.startTime >= :endTime)',
+        '(booking.startTime IS NULL OR (booking.endTime <= :startTime OR booking.startTime >= :endTime))',
         { startTime, endTime }
       )
       .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
@@ -146,11 +146,11 @@ export class RoomService {
       .leftJoinAndSelect('room.bookings', 'booking')
       .leftJoinAndSelect('room.typeRoom', 'typeRoom')
       .where(
-        'booking.startTime IS NULL OR (booking.endTime <= :startTime OR booking.startTime >= :endTime)',
+        '(booking.startTime IS NULL OR (booking.endTime <= :startTime OR booking.startTime >= :endTime))',
         { startTime, endTime }
       )
-      .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
-      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Unpaid, BookingStatus.Paid] })
+      .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople }) // Giới hạn số người
+      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Unpaid, BookingStatus.Paid] }) // Điều kiện trạng thái booking
       .orderBy('room.pricePerDay', sortDirection) // Sắp xếp theo giá phòng
       .take(take) // Giới hạn số lượng phòng trên mỗi trang
       .skip(skip) // Bỏ qua các kết quả của trang trước đó
@@ -221,7 +221,7 @@ export class RoomService {
       .createQueryBuilder('room')
       .leftJoin('room.bookings', 'booking')
       .where(
-        'booking.bookingId IS NULL OR (:now NOT BETWEEN booking.startTime AND booking.endTime)',
+        '(booking.bookingId IS NULL OR (:now NOT BETWEEN booking.startTime AND booking.endTime))',
         { now }
       )
       .getCount();
@@ -229,13 +229,13 @@ export class RoomService {
       .createQueryBuilder('room')
       .leftJoin('room.bookings', 'booking')
       .where(
-        'booking.bookingId IS NULL OR (:now NOT BETWEEN booking.startTime AND booking.endTime)',
+        '(booking.bookingId IS NULL OR (:now NOT BETWEEN booking.startTime AND booking.endTime))',
         { now }
       )
       .take(take)
       .skip(skip)
       .getMany();
-      const totalPages = Math.ceil(totalItems / take);
+    const totalPages = Math.ceil(totalItems / take);
     const room = plainToClass(RoomResponseDto, availableRooms);
     // Trả về kết quả
     const metaResponseDto = plainToClass(MetaResponseDto, {
