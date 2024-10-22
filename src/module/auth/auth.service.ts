@@ -29,7 +29,7 @@ export class AuthService {
   }
 
   async handleLogin(user: IUser, response: Response) {
-    const { id, name, email, role } = user;
+    const { id, name, email, role, phoneNumber, address } = user;
     const payload = {
       sub: "token login",
       iss: "from server",
@@ -53,6 +53,8 @@ export class AuthService {
         id,
         name,
         email,
+        phoneNumber,
+        address,
         role
       }
     };
@@ -82,7 +84,7 @@ export class AuthService {
       if (!user) {
         throw new BadRequestException("Invalid refresh token")
       }
-      const { id, name, email, role } = user;
+      const { id, name, email, role, phoneNumber, address } = user;
       const payload = {
         sub: "token login",
         iss: "from server",
@@ -107,6 +109,8 @@ export class AuthService {
           id,
           name,
           email,
+          phoneNumber,
+          address,
           role
         }
       };
@@ -117,7 +121,7 @@ export class AuthService {
   }
 
   async handleFacebookLogin(user: IUser, response: Response) {
-    const { id, name, email, role } = user;
+    const { id, name, email, role, phoneNumber, address, phoneNumber } = user;
     const payload = {
       sub: "token login",
       iss: "from server",
@@ -141,6 +145,8 @@ export class AuthService {
         id,
         name,
         email,
+        phoneNumber,
+        address,
         role
       }
     };
