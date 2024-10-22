@@ -49,8 +49,6 @@ export class AuthController {
     return this.authService.handleRefreshToken(refresh_token, response);
   }
 
-
-
   @Post('facebook')
   @UseGuards(AuthGuard('facebook-token'))
   @Public()
