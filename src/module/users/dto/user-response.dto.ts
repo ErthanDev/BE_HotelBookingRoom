@@ -10,5 +10,7 @@ export class UserResponseDto {
     @Expose()
     phoneNumber: string;
     @Expose()
+    address: string;
+    @Expose()
     role: string;
 }

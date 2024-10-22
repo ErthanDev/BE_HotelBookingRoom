@@ -157,5 +157,10 @@ export class AuthService {
     response.clearCookie("refresh_token")
     return "ok"
   }
+  
+  async getProfile(user: IUser) {
+    const { id} = user;
+    return await this.usersService.findOne(id)
+  }
 }
 

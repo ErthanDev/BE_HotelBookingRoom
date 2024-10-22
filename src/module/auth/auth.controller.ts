@@ -1,13 +1,14 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Req, HttpStatus, ValidationPipe, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { Public, ResponseMessage, User } from '../../decorators/customize';
+import { Public, ResponseMessage, Serialize, User } from '../../decorators/customize';
 import { IUser } from '../users/user.interface';
 import { RegisterUserDto } from './dto/register-auth.dto';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { LocalAuthGuard } from './guard/local.guard';
 import { LoginAuthDto } from './dto/login-auth-dto';
+import { UserResponseDto } from '../users/dto/user-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -36,9 +37,10 @@ export class AuthController {
   }
 
   @ResponseMessage('Get user profile')
+  @Serialize(UserResponseDto)
   @Get('profile')
   async getProfile(@User() user: IUser,) {
-    return user;
+    return this.authService.getProfile(user);
   }
 
   @ResponseMessage('Get user refresh token')

@@ -5,5 +5,4 @@ export interface IUser {
    phoneNumber:string;
    role:string;
    address:string;
-   
 }
