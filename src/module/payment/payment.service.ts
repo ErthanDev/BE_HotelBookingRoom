@@ -25,7 +25,7 @@ export class PaymentService {
     private mailService: MailService
   ) { }
   async createPayment(createPaymentDto: CreatePaymentDto) {
-    const { bookingId, amount, paymentMethod, discountCode } = createPaymentDto;
+    const { bookingId, amount, paymentMethod, discountCode,paymentId } = createPaymentDto;
 
     // Tìm discount nếu có
     if (discountCode) {
@@ -53,11 +53,10 @@ export class PaymentService {
     if (!booking) {
       throw new NotFoundException('Booking not found');
     }
-    booking.bookingStatus = BookingStatus.Paid;
-    await this.bookingRepository.save(booking);
 
     // Tạo payment
     const payment = this.paymentRepository.create({
+      paymentId:paymentId,
       amount,
       paymentMethod,
       booking,
@@ -65,24 +64,60 @@ export class PaymentService {
     const savedPayment = await this.paymentRepository.save(payment);
 
     // Gửi email không đồng bộ
-    setTimeout(async () => {
-      const mailInfo: CreateMailDto = new CreateMailDto(
-        booking.user.email,
-        booking.user.name,
-        booking.startTime,
-        booking.endTime,
-        booking.bookingType,
-        booking.numberOfGuest,
-        amount
-      );
-      await this.mailService.sendMail(mailInfo);
-    }, 0);  // Đưa vào queue thực hiện ngay khi có thể
+     // Đưa vào queue thực hiện ngay khi có thể
 
     // Extract user information without refreshToken
 
     return savedPayment
   }
+  async createPaymentByCash(createPaymentDto: CreatePaymentDto){
+    const { bookingId, amount, paymentMethod, discountCode } = createPaymentDto
+    if (discountCode) {
+      let discount = await this.discountRepository.findOne({ where: { discountCode } });
+      if (!discount) {
+        throw new NotFoundException('Discount not found');
+      } else {
+        if (discount.discountStatus == DiscountStatus.Unavailable) {
+          throw new BadRequestException('Discount is not available');
+        } else if (discount.validFrom > new Date()) {
+          throw new BadRequestException('Discount is not available');
+        } else if (discount.validTo < new Date()) {
+          throw new BadRequestException('Discount is not available');
+        }
+      }
+      discount.discountStatus = DiscountStatus.Unavailable;
+      await this.discountRepository.save(discount);
+    }
+    const booking = await this.bookingRepository.findOne({
+      where: { bookingId },
+      relations: ['user'],
+    });
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
 
+    // Tạo payment
+    const payment = this.paymentRepository.create({
+      amount,
+      paymentMethod,
+      booking,
+    });
+    payment.paymentStatus=PaymentStatus.Success
+    const savedPayment = await this.paymentRepository.save(payment);
+    // setTimeout(async () => {
+    //   const mailInfo: CreateMailDto = new CreateMailDto(
+    //     booking.user.email,
+    //     booking.user.name,
+    //     booking.startTime,
+    //     booking.endTime,
+    //     booking.bookingType,
+    //     booking.numberOfGuest,
+    //     amount,
+    //   );
+    //   await this.mailService.sendMail(mailInfo);
+    // }, 0); 
+    return savedPayment;
+  }
   async refundPayment(paymentId: string) {
     const payment = await this.paymentRepository.findOne({ where: { paymentId }, relations: ['booking'] });
     if (!payment) {
@@ -158,6 +193,46 @@ export class PaymentService {
       .getRawMany();  // Trả về kết quả thô
 
     return payments;
+  }
+
+  async findOne(id: string) {
+    return this.paymentRepository.findOne(
+      { 
+        where: { paymentId: id },
+        relations:['booking','booking.user']
+     }
+    );
+  }
+
+  async updateStatus(paymentId: string, status: PaymentStatus) {
+    const payment = await this.paymentRepository.findOne({ where: { paymentId } ,relations:['booking','booking.user']});
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+    const booking = await this.bookingRepository.findOne({ where: { bookingId: payment.booking.bookingId } });
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+    
+    payment.paymentStatus = status;
+    const newPayment = await this.paymentRepository.save(payment);
+    if(newPayment.paymentStatus === PaymentStatus.Success){
+      setTimeout(async () => {
+        const mailInfo: CreateMailDto = new CreateMailDto(
+          payment.booking.user.email,
+          payment.booking.user.name,
+          payment.booking.startTime,
+          payment.booking.endTime,
+          payment.booking.bookingType,
+          payment.booking.numberOfGuest,
+          payment.amount,
+        );
+        await this.mailService.sendMail(mailInfo);
+      }, 0); 
+      booking.bookingStatus = BookingStatus.Paid;
+      await this.bookingRepository.save(booking);
+    }
+    return newPayment;
   }
 
 }

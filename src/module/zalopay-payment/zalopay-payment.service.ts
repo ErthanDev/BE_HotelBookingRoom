@@ -6,12 +6,15 @@ import { ConfigService } from '@nestjs/config';
 import { PaymentService } from 'src/module/payment/payment.service';
 import { CreatePaymentDto } from 'src/module/payment/dto/create-payment.dto';
 import { PaymentMethod } from 'src/enum/paymentMethod.enum';
+import { PaymentStatus } from 'src/enum/paymentStatus.enum';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class ZalopayPaymentService {
   constructor(
     private configService: ConfigService,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private mailService:MailService
   ) { }
   private config = {
     app_id: this.configService.get<string>('ZALOPAY_APP_ID'),
@@ -46,6 +49,9 @@ export class ZalopayPaymentService {
     // appid|app_trans_id|appuser|amount|apptime|embeddata|item
     const data = this.config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
     order.mac = this.createSecureHash(data, this.config.key1)
+    const paymentDto = new CreatePaymentDto(+req.body.amount, PaymentMethod.ZaloPay, req.body.bookingId, order.app_trans_id, req.body.discountCode);
+
+    const newPayment = await this.paymentService.createPayment(paymentDto);
 
     try {
       const result = await axios.post(this.config.endpoint, null, { params: order });
@@ -64,7 +70,6 @@ export class ZalopayPaymentService {
     let result = {
       return_code: 1,
       return_message: "success",
-      payment: ""
     };
 
     try {
@@ -86,14 +91,8 @@ export class ZalopayPaymentService {
         // thanh toán thành công
         // merchant cập nhật trạng thái cho đơn hàng
         let dataJson = JSON.parse(dataStr);
-        const embedDataJson = JSON.parse(dataJson['embed_data']);
+        await this.paymentService.updateStatus(dataJson['app_trans_id'], PaymentStatus.Success);
 
-        const bookingId = embedDataJson['bookingId'];
-        const discountCode = embedDataJson['discountCode'];
-        const paymentDto = new CreatePaymentDto(+dataJson['amount'], PaymentMethod.ZaloPay, bookingId, dataJson['app_trans_id'], discountCode);
-
-        const newPayment = await this.paymentService.createPayment(paymentDto);
-        result.payment = JSON.stringify(newPayment);
         result.return_code = 1;
         result.return_message = "success";
       }

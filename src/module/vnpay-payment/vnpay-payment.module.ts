@@ -5,10 +5,12 @@ import { VnpayModule } from 'nestjs-vnpay';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PaymentModule } from 'src/module/payment/payment.module';
 import { PaymentService } from 'src/module/payment/payment.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     PaymentModule,
+    MailModule,
     VnpayModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

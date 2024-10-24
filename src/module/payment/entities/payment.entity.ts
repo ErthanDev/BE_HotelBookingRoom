@@ -16,7 +16,7 @@ export class Payment {
 
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     paymentDate: Date;
-    @Column({ type: "enum", enum: PaymentStatus, default: PaymentStatus.Success })
+    @Column({ type: "enum", enum: PaymentStatus, default: PaymentStatus.Failed })
     paymentStatus: PaymentStatus;
 
     @Column({ type: "enum", enum: PaymentMethod })

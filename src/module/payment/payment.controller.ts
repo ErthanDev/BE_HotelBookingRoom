@@ -22,7 +22,7 @@ export class PaymentController {
   @Serialize(PaymentResponseDto)
   @Roles(UserRole.Staff)
   create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentService.createPayment(createPaymentDto);
+    return this.paymentService.createPaymentByCash(createPaymentDto);
   }
 
 

@@ -13,18 +13,17 @@ export class VnpayPaymentController {
     return this.vnpayPaymentService.buildPaymentUrl(req);
   }
 
-  @Get('return')
-  @ResponseMessage('Create vnpay payment success')
+  @Get('ipn')
+  @ResponseMessage('Ipn vnpay payment success')
   @Serialize(PaymentResponseDto)
   @Public()
   async handleVnpayReturn(@Req() req:any,@Res() res:any) {
+    console.log(req.query);
     try{
-      await this.vnpayPaymentService.handleVnpayReturn(req);
-      return res.redirect('http://localhost:3000/payment/success');
+      return await this.vnpayPaymentService.handleVnpayIpn(req);
     }
     catch(error){
       console.log(error);
-      return res.redirect('http://localhost:3000/payment/fail');
     }
   }
 }
