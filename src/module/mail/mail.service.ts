@@ -7,7 +7,25 @@ import { TypeBooking } from 'src/enum/typeBooking.enum';
 @Injectable()
 export class MailService {
   constructor(private readonly mailService: MailerService) { }
+  formatDate(date: Date, typeBooking: TypeBooking): string {
+    if (typeBooking === TypeBooking.Daily) {
+      return date.toLocaleDateString('vi-VN'); // Date only
+    } else if (typeBooking === TypeBooking.Hourly) {
+      return date.toLocaleString('vi-VN'); // Date with time
+    }
+    return date.toString(); // Default
+  }
+  formatPrice(price: number): string {
+    return price.toLocaleString('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    });
+  }
+
   async sendMail(createMailDto: CreateMailDto) {
+    const formattedStartTime = this.formatDate(createMailDto.startTime, createMailDto.typeBooking);
+    const formattedEndTime = this.formatDate(createMailDto.endTime, createMailDto.typeBooking);
+    const total = this.formatPrice(createMailDto.totalPrice);
     await this.mailService.sendMail({
       to: createMailDto.email, // list of receivers
       from: 'The Élégance Hotel', // override default from 
@@ -15,11 +33,11 @@ export class MailService {
       template: 'mail-template', // HTML body content 
       context: {
         nameCustomer: createMailDto.nameCustomer,
-        startTime: createMailDto.startTime,
-        endTime: createMailDto.endTime,
+        startTime: formattedStartTime,
+        endTime: formattedEndTime,
         typeBooking: createMailDto.typeBooking,
         numberOfPerson: createMailDto.numberOfPerson,
-        totalPrice: createMailDto.totalPrice,
+        totalPrice: total, 
       }
     });
   }
