@@ -123,12 +123,17 @@ export class PaymentService {
     if (!payment) {
       throw new NotFoundException('Payment not found');
     }
-
+    if (payment.paymentStatus === PaymentStatus.Refund) {
+      throw new BadRequestException('Payment has been refunded');
+    }
+    if (payment.paymentStatus === PaymentStatus.Failed) {
+      return;
+    }
     const booking = await this.bookingRepository.findOne({ where: { bookingId: payment.booking.bookingId } });
     if (!booking) {
       throw new NotFoundException('Booking not found');
     }
-
+    
     const now = new Date();  // Lấy ngày hiện tại
     const startTime = new Date(booking.startTime);  // Lấy thời gian bắt đầu của booking
 
