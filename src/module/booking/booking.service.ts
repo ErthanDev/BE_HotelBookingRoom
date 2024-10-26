@@ -146,29 +146,31 @@ export class BookingService {
   }
 
   async update(id: string, updateBookingDto: UpdateBookingDto) {
-    const { bookingStatus } = updateBookingDto;
-    if (!Array.isArray(updateBookingDto.utilities)) {
-      throw new Error('utilities must be an array');
-    }
-    const booking = await this.bookingRepository.findOne({ where: { bookingId: id } });
-
-    for (const utility of updateBookingDto.utilities) {
-      const utilityExist = await this.utilityRepository.findOne({ where: { utilityId: utility.utilityId } });
-      const bookingUtilityExist = await this.bookingUtilityRepository.findOne({ where: { booking: booking, utility: utilityExist } });
-      if (bookingUtilityExist) {
-        if (utility.quantity === 0) {
-          await this.bookingUtilityRepository.delete(bookingUtilityExist);
+    const { bookingStatus,utilities } = updateBookingDto;
+    if(utilities){
+      if (!Array.isArray(updateBookingDto.utilities)) {
+        throw new Error('utilities must be an array');
+      }
+      const booking = await this.bookingRepository.findOne({ where: { bookingId: id } });
+  
+      for (const utility of updateBookingDto.utilities) {
+        const utilityExist = await this.utilityRepository.findOne({ where: { utilityId: utility.utilityId } });
+        const bookingUtilityExist = await this.bookingUtilityRepository.findOne({ where: { booking: booking, utility: utilityExist } });
+        if (bookingUtilityExist) {
+          if (utility.quantity === 0) {
+            await this.bookingUtilityRepository.delete(bookingUtilityExist);
+          } else {
+            await this.bookingUtilityRepository.update(bookingUtilityExist.bookingUtilityId, { quantity: utility.quantity });
+          }
         } else {
-          await this.bookingUtilityRepository.update(bookingUtilityExist.bookingUtilityId, { quantity: utility.quantity });
-        }
-      } else {
-        if (utility.quantity > 0) {
-          const bookingUtility = this.bookingUtilityRepository.create({
-            booking,
-            utility: utilityExist,
-            quantity: utility.quantity,
-          });
-          await this.bookingUtilityRepository.save(bookingUtility);
+          if (utility.quantity > 0) {
+            const bookingUtility = this.bookingUtilityRepository.create({
+              booking,
+              utility: utilityExist,
+              quantity: utility.quantity,
+            });
+            await this.bookingUtilityRepository.save(bookingUtility);
+          }
         }
       }
     }
