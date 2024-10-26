@@ -46,7 +46,6 @@ export class BookingController {
   @Patch(':id')
   @Serialize(BookingResponseDto)
   @ResponseMessage('Booking updated fetch successfully')
-  @Roles(UserRole.Staff)
   update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
     return this.bookingService.update(id, updateBookingDto);
   }
