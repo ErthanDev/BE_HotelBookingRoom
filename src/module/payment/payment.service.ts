@@ -118,8 +118,9 @@ export class PaymentService {
     // }, 0); 
     return savedPayment;
   }
-  async refundPayment(paymentId: string) {
-    const payment = await this.paymentRepository.findOne({ where: { paymentId }, relations: ['booking'] });
+  async refundPayment(bookingId: string) {
+    const booking = await this.bookingRepository.findOne({where:{bookingId}})
+    const payment = await this.paymentRepository.findOne({ where: {booking}, relations: ['booking'] });
     if (!payment) {
       throw new NotFoundException('Payment not found');
     }
@@ -129,7 +130,6 @@ export class PaymentService {
     if (payment.paymentStatus === PaymentStatus.Failed) {
       return;
     }
-    const booking = await this.bookingRepository.findOne({ where: { bookingId: payment.booking.bookingId } });
     if (!booking) {
       throw new NotFoundException('Booking not found');
     }
