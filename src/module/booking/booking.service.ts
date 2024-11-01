@@ -99,7 +99,7 @@ export class BookingService {
   async findOne(id: string) {
     const booking = await this.bookingRepository.findOne({
       where: { bookingId: id },
-      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility', 'room.typeRoom'],
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility', 'room.typeRoom', 'payments'],
     });
 
     if (!booking) {

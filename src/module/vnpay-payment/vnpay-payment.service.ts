@@ -44,9 +44,7 @@ export class VnpayPaymentService {
   async handleVnpayIpn(req: any) {
     try {
       const verify: VerifyReturnUrl = await this.vnpayService.verifyIpnCall(req.query);
-      console.log("hello")
       if (!verify.isVerified) {
-        console.log("hello1")
 
           return IpnFailChecksum;
       }
@@ -57,21 +55,18 @@ export class VnpayPaymentService {
       console.log("payment:"+foundOrder)
       // Nếu không tìm thấy đơn hàng hoặc mã đơn hàng không khớp
       if (!foundOrder || verify.vnp_TxnRef !== foundOrder.paymentId) {
-      console.log("hello2")
 
           return IpnOrderNotFound;
       }
 
       // Nếu số tiền thanh toán không khớp
       if (verify.vnp_Amount !== foundOrder.amount) {
-      console.log("hello3")
 
           return IpnInvalidAmount;
       }
 
       // Nếu đơn hàng đã được xác nhận trước đó
       if (foundOrder.paymentStatus === PaymentStatus.Success) {
-          console.log("hello4")
 
           return InpOrderAlreadyConfirmed;
       }

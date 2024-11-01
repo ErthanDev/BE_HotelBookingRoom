@@ -134,7 +134,7 @@ export class RoomService {
         { startTime, endTime }
       )
       .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
-      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Unpaid, BookingStatus.Paid] })
+      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Paid] })
       .getCount(); // Đếm số phòng thỏa mãn
 
     // Tính tổng số trang dựa trên tổng số phòng
@@ -150,7 +150,7 @@ export class RoomService {
         { startTime, endTime }
       )
       .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople }) // Giới hạn số người
-      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Unpaid, BookingStatus.Paid] }) // Điều kiện trạng thái booking
+      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [ BookingStatus.Paid] }) // Điều kiện trạng thái booking
       .orderBy('room.pricePerDay', sortDirection) // Sắp xếp theo giá phòng
       .take(take) // Giới hạn số lượng phòng trên mỗi trang
       .skip(skip) // Bỏ qua các kết quả của trang trước đó
