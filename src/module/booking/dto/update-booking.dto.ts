@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateBookingDto } from './create-booking.dto';
-import { IsArray, IsNotEmpty, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, Min, ValidateNested } from 'class-validator';
 import { BookingStatus } from 'src/enum/bookingStatus.enum';
 import { Utility } from 'src/module/utility/entities/utility.entity';
 import { Type } from 'class-transformer';
@@ -14,6 +14,7 @@ class UtilityDto {
   }
 
 export class UpdateBookingDto extends PartialType(CreateBookingDto) {
+    @IsEnum(BookingStatus)
     bookingStatus: BookingStatus;
 
     @IsArray()
