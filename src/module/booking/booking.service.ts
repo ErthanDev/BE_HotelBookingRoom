@@ -73,7 +73,7 @@ export class BookingService {
     const [result, total] = await this.bookingRepository.findAndCount({
       take: take || totalItems,
       skip: skip,
-      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility', 'room.typeRoom'],
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility', 'room.typeRoom','payments'],
       order: {
         bookingDate: 'DESC'  // Sắp xếp theo ngày đặt mới nhất trước
       }
