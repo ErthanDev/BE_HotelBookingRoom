@@ -47,7 +47,7 @@ export class RoomController {
   @Serialize(RoomResponseDto)
   @Roles(UserRole.Staff)
   remove(@Param('id') id: string) {
-    return this.roomService.remove(+id);
+    // return this.roomService.remove(+id);
   }
 
   @Get('available/search')
