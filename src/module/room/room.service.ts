@@ -54,13 +54,28 @@ export class RoomService {
     const [result, total] = await this.roomRepository.findAndCount({
       take: take || totalItems,
       skip: skip,
-      relations: ['typeRoom'],
+      relations: ['typeRoom', 'bookings'],
       where: {
         // Nếu có từ khóa tìm kiếm
         interior: keyword ? Like(`%${keyword}%`) : undefined,
       }
     });
-    const room = plainToClass(RoomResponseDto, result);
+
+    // kiểm tra xem phòng có được đặt hay còn trống ở thời điểm hiện tại
+    const currentTime = new Date();
+    const roomsWithBookingStatus = result.map(room => {
+      const isBooked = room.bookings.some(booking => 
+          booking.startTime <= currentTime && booking.endTime >= currentTime
+      );
+      return {
+          ...room,
+          isBooked
+      };
+  });
+
+    const room = plainToClass(RoomResponseDto, roomsWithBookingStatus);
+
+    // const room = plainToClass(RoomResponseDto, result);
     // Trả về kết quả
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,

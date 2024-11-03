@@ -22,6 +22,8 @@ export class RoomResponseDto {
     @Type(() => TypeRoomResponseDto  )
     typeRoom:TypeRoomResponseDto 
            
+    @Expose()
+    isBooked: boolean;
 }
 
 export class RoomsResponseDto {
