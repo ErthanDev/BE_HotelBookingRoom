@@ -16,37 +16,35 @@ export class DiscountService {
   ) {}
 
   async create(createDiscountDto: CreateDiscountDto) {
-    
     const save = this.discountRepository.create(createDiscountDto);
     await this.discountRepository.save(save);
-    
     return save;
   }
 
   async findAll(qs: any) {
-    const take = +qs.limit || 10;
-    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const defaultLimit = +qs.limit ? +qs.limit : 10;
-
     const totalItems = await this.discountRepository.count();
+    const take = qs.limit ? +qs.limit : totalItems; // Lấy tất cả bản ghi nếu qs.limit rỗng
+    const skip = qs.currentPage ? (+qs.currentPage - 1) * take : 0;
+    const totalPages = Math.ceil(totalItems / take);
 
-    const totalPages = Math.ceil(totalItems / defaultLimit);
-    
     const [result, total] = await this.discountRepository.findAndCount({
-        take: take || totalItems,
-        skip: skip,
+      take,
+      skip,
     });
+
     const discounts = plainToClass(DiscountResponseDto, result);
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,
-      pageSize: +qs.limit || 10,
+      pageSize: take,
       pages: totalPages,
-      total: total,
+      total,
     });
+
     const response = plainToClass(DiscountsResponseDto, {
       meta: metaResponseDto,
-      discounts: discounts
-    })
+      discounts,
+    });
+
     return response;
   }
 
