@@ -39,7 +39,7 @@ export class UsersService {
 
 
   async findAll(qs: any) {
-    const take = +qs.limit || 10
+    const take = +qs.limit || undefined
     const skip = (+qs.currentPage - 1) * (+qs.limit) || 0
     const keyword = qs.keyword || ''
     const defaultLimit = +qs.limit ? +qs.limit : 10
@@ -59,7 +59,7 @@ export class UsersService {
     return {
       meta: {
         current: +qs.currentPage || 1,
-        pageSize: +qs.limit,
+        pageSize: +qs.limit|| "all",
         pages: totalPages,
         total: total
       },

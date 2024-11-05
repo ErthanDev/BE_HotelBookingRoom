@@ -21,11 +21,12 @@ export class SurchargeService {
   }
 
   async findAll(qs: any) {
-    const take = +qs.limit || 10;
+    const totalItems = await this.surchargeRepository.count();
+
+    const take = qs.limit ? +qs.limit : totalItems; // Lấy tất cả bản ghi nếu qs.limit rỗng
     const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
     const defaultLimit = +qs.limit ? +qs.limit : 10;
 
-    const totalItems = await this.surchargeRepository.count();
 
     const totalPages = Math.ceil(totalItems / defaultLimit);
 

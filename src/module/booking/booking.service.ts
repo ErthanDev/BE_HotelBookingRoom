@@ -62,39 +62,34 @@ export class BookingService {
   }
 
   async findAll(qs: any) {
-    const take = +qs.limit || 10;
-    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const defaultLimit = +qs.limit ? +qs.limit : 10;
-
     const totalItems = await this.bookingRepository.count();
-
-    const totalPages = Math.ceil(totalItems / defaultLimit);
-
+    const take = qs.limit ? +qs.limit : totalItems; // Fetch all if qs.limit is empty
+    const skip = qs.currentPage ? (+qs.currentPage - 1) * take : 0;
+    const totalPages = Math.ceil(totalItems / take);
+  
     const [result, total] = await this.bookingRepository.findAndCount({
-      take: take || totalItems,
-      skip: skip,
-      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility', 'room.typeRoom','payments'],
-      order: {
-        bookingDate: 'DESC'  // Sắp xếp theo ngày đặt mới nhất trước
-      }
+      take,
+      skip,
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility', 'room.typeRoom', 'payments'],
+      order: { bookingDate: 'DESC' }
     });
+  
     const booking = plainToClass(BookingResponseDto, result);
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,
-      pageSize: +qs.limit || 10,
+      pageSize: take,
       pages: totalPages,
-      total: total,
+      total
     });
-
-    // Tạo RoomsResponseDto
+  
     const bookingsResponseDto = plainToClass(BookingsResponseDto, {
       meta: metaResponseDto,
-      bookings: booking,
+      bookings: booking
     });
-
+  
     return bookingsResponseDto;
-
   }
+  
 
   async findOne(id: string) {
     const booking = await this.bookingRepository.findOne({
@@ -110,40 +105,36 @@ export class BookingService {
   }
 
   async findMyBooking(userId: string, qs: any) {
-    const take = +qs.limit || 10;
-    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const defaultLimit = +qs.limit ? +qs.limit : 10;
-
-
+    const totalItems = await this.bookingRepository.count({ where: { user: { id: userId } } });
+    const take = qs.limit ? +qs.limit : totalItems; // Lấy tất cả nếu qs.limit rỗng
+    const skip = qs.currentPage ? (+qs.currentPage - 1) * take : 0;
+    const totalPages = Math.ceil(totalItems / take);
+  
     const user = await this.userRepository.findOne({ where: { id: userId } });
-
     const [result, total] = await this.bookingRepository.findAndCount({
-      take: take,
-      skip: skip,
-      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility','payments'],
-      where: { user: user },
-      order: {
-        bookingDate: 'DESC'  // Sắp xếp theo ngày đặt mới nhất trước
-      }
+      take,
+      skip,
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility', 'payments'],
+      where: { user },
+      order: { bookingDate: 'DESC' }
     });
-    const totalPages = Math.ceil(total / defaultLimit);
-
+  
     const booking = plainToClass(BookingResponseDto, result);
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,
-      pageSize: +qs.limit || 10,
+      pageSize: take,
       pages: totalPages,
-      total: total,
+      total
     });
-
-    // Tạo RoomsResponseDto
+  
     const bookingsResponseDto = plainToClass(BookingsResponseDto, {
       meta: metaResponseDto,
-      bookings: booking,
+      bookings: booking
     });
-
+  
     return bookingsResponseDto;
   }
+  
 
   async update(id: string, updateBookingDto: UpdateBookingDto) {
     const { bookingStatus,utilities } = updateBookingDto;
@@ -192,76 +183,68 @@ export class BookingService {
   }
 
   async findBookingByStatus(status: BookingStatus, qs: any) {
-    const take = +qs.limit || 10;
-    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const defaultLimit = +qs.limit ? +qs.limit : 10;
-
-
-
-
+    const totalItems = await this.bookingRepository.count({ where: { bookingStatus: status } });
+    const take = qs.limit ? +qs.limit : totalItems; // Lấy tất cả nếu qs.limit rỗng
+    const skip = qs.currentPage ? (+qs.currentPage - 1) * take : 0;
+    const totalPages = Math.ceil(totalItems / take);
+  
     const [result, total] = await this.bookingRepository.findAndCount({
-      take: take,
-      skip: skip,
+      take,
+      skip,
       where: { bookingStatus: status },
       relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility'],
-      order: {
-        bookingDate: 'DESC'  // Sắp xếp theo ngày đặt mới nhất trước
-      }
+      order: { bookingDate: 'DESC' }
     });
-
-    const totalPages = Math.ceil(total / defaultLimit);
-
+  
     const bookingResponse = plainToClass(BookingResponseDto, result);
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,
-      pageSize: +qs.limit || 10,
+      pageSize: take,
       pages: totalPages,
-      total: total,
+      total
     });
-
-    // Tạo RoomsResponseDto
+  
     const bookingsResponseDto = plainToClass(BookingsResponseDto, {
       meta: metaResponseDto,
-      bookings: bookingResponse,
+      bookings: bookingResponse
     });
-
+  
     return bookingsResponseDto;
   }
 
   async findBookingToday(qs: any) {
-    const take = +qs.limit || 10;
-    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const defaultLimit = +qs.limit ? +qs.limit : 10;
-
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Đặt thời gian về 00:00:00 cho ngày hôm nay
-
+    today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1)
-    const [result, total] = await this.bookingRepository.findAndCount({
-      take: take,
-      skip: skip,
-      where: {
-        startTime: Between(today, tomorrow), // Lọc các booking trong khoảng từ hôm nay đến ngày mai
-      },
-      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility'],
+    tomorrow.setDate(today.getDate() + 1);
+  
+    const totalItems = await this.bookingRepository.count({
+      where: { startTime: Between(today, tomorrow) }
     });
-    const totalPages = Math.ceil(total / defaultLimit);
-
+    const take = qs.limit ? +qs.limit : totalItems; // Lấy tất cả nếu qs.limit rỗng
+    const skip = qs.currentPage ? (+qs.currentPage - 1) * take : 0;
+    const totalPages = Math.ceil(totalItems / take);
+  
+    const [result, total] = await this.bookingRepository.findAndCount({
+      take,
+      skip,
+      where: { startTime: Between(today, tomorrow) },
+      relations: ['user', 'room', 'bookingUtilities', 'bookingUtilities.utility']
+    });
+  
     const bookingResponse = plainToClass(BookingResponseDto, result);
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,
-      pageSize: +qs.limit || 10,
+      pageSize: take,
       pages: totalPages,
-      total: total,
+      total
     });
-
-    // Tạo RoomsResponseDto
+  
     const bookingsResponseDto = plainToClass(BookingsResponseDto, {
       meta: metaResponseDto,
-      bookings: bookingResponse,
+      bookings: bookingResponse
     });
-
+  
     return bookingsResponseDto;
   }
 
