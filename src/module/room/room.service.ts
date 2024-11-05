@@ -39,58 +39,34 @@ export class RoomService {
   }
 
   async findAll(qs: any) {
-    const take = +qs.limit || 10;
-    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const keyword = qs.keyword || '';
-    const defaultLimit = +qs.limit ? +qs.limit : 10;
-
-    // Đếm tổng số phòng
     const totalItems = await this.roomRepository.count();
-
-    // Tính tổng số trang
-    const totalPages = Math.ceil(totalItems / defaultLimit);
-
-    // Truy vấn danh sách phòng cùng với thông tin loại phòng (TypeRoom)
+    const take = +qs.limit || totalItems;  // Take all if qs.limit is empty
+    const skip = (+qs.currentPage - 1) * take || 0;
+    const keyword = qs.keyword || '';
+  
+    const totalPages = Math.ceil(totalItems / take);
+  
     const [result, total] = await this.roomRepository.findAndCount({
-      take: take || totalItems,
-      skip: skip,
+      take,
+      skip,
       relations: ['typeRoom', 'bookings'],
       where: {
-        // Nếu có từ khóa tìm kiếm
         interior: keyword ? Like(`%${keyword}%`) : undefined,
-      }
+      },
     });
-
-    // kiểm tra xem phòng có được đặt hay còn trống ở thời điểm hiện tại
-    const currentTime = new Date();
-    const roomsWithBookingStatus = result.map(room => {
-      const isBooked = room.bookings.some(booking => 
-          booking.startTime <= currentTime && booking.endTime >= currentTime
-      );
-      return {
-          ...room,
-          isBooked
-      };
-  });
-
-    const room = plainToClass(RoomResponseDto, roomsWithBookingStatus);
-
-    // const room = plainToClass(RoomResponseDto, result);
-    // Trả về kết quả
+  
+    const room = plainToClass(RoomResponseDto, result);
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,
-      pageSize: +qs.limit || 10,
+      pageSize: take,
       pages: totalPages,
-      total: total,
+      total,
     });
-
-    // Tạo RoomsResponseDto
-    const roomsResponseDto = plainToClass(RoomsResponseDto, {
+  
+    return plainToClass(RoomsResponseDto, {
       meta: metaResponseDto,
       rooms: room,
     });
-    console.log(result);
-    return roomsResponseDto;
   }
 
 
@@ -136,10 +112,6 @@ export class RoomService {
 
 
   async getAvailableRooms(startTime: Date, endTime: Date, numberOfPeople: number, sortDirection: 'ASC' | 'DESC', qs: any) {
-    const take = +qs.limit || 10; // Số lượng phòng trên mỗi trang
-    const skip = (+qs.currentPage - 1) * take || 0; // Bỏ qua các kết quả của trang trước đó
-
-    // Đếm tổng số phòng thỏa mãn điều kiện
     const totalItems = await this.roomRepository
       .createQueryBuilder('room')
       .leftJoinAndSelect('room.bookings', 'booking')
@@ -150,12 +122,12 @@ export class RoomService {
       )
       .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
       .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Paid] })
-      .getCount(); // Đếm số phòng thỏa mãn
-
-    // Tính tổng số trang dựa trên tổng số phòng
+      .getCount();
+  
+    const take = +qs.limit || totalItems;
+    const skip = (+qs.currentPage - 1) * take || 0;
     const totalPages = Math.ceil(totalItems / take);
-
-    // Lấy danh sách phòng thỏa mãn điều kiện với phân trang
+  
     const availableRooms = await this.roomRepository
       .createQueryBuilder('room')
       .leftJoinAndSelect('room.bookings', 'booking')
@@ -164,74 +136,64 @@ export class RoomService {
         '(booking.startTime IS NULL OR (booking.endTime <= :startTime OR booking.startTime >= :endTime))',
         { startTime, endTime }
       )
-      .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople }) // Giới hạn số người
-      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [ BookingStatus.Paid] }) // Điều kiện trạng thái booking
-      .orderBy('room.pricePerDay', sortDirection) // Sắp xếp theo giá phòng
-      .take(take) // Giới hạn số lượng phòng trên mỗi trang
-      .skip(skip) // Bỏ qua các kết quả của trang trước đó
+      .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
+      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Paid] })
+      .orderBy('room.pricePerDay', sortDirection)
+      .take(take)
+      .skip(skip)
       .getMany();
-
+  
     const room = plainToClass(RoomResponseDto, availableRooms);
-    // Trả về kết quả
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,
-      pageSize: +qs.limit || 10,
+      pageSize: take,
       pages: totalPages,
       total: totalItems,
     });
-
-    // Tạo RoomsResponseDto
-    const roomsResponseDto = plainToClass(RoomsResponseDto, {
+  
+    return plainToClass(RoomsResponseDto, {
       meta: metaResponseDto,
       rooms: room,
     });
-    return roomsResponseDto;
   }
 
   async getRoomByTypeRoomId(typeRoomId: string, qs: any) {
     const typeRoom = await this.typeRoomRepository.findOne({
-      where: {
-        id: typeRoomId
-      }
+      where: { id: typeRoomId },
     });
-    const take = +qs.limit || 10;
-    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-    const defaultLimit = +qs.limit ? +qs.limit : 10;
-
-
-
-    // Tính tổng số trang
+  
+    const totalItems = await this.roomRepository.count({
+      where: { typeRoom },
+    });
+  
+    const take = +qs.limit || totalItems;
+    const skip = (+qs.currentPage - 1) * take || 0;
+    const totalPages = Math.ceil(totalItems / take);
+  
     const [result, total] = await this.roomRepository.findAndCount({
-      take: take,
-      skip: skip,
+      take,
+      skip,
       relations: ['typeRoom'],
-      where: {
-        typeRoom: typeRoom
-      },
+      where: { typeRoom },
     });
-    const totalPages = Math.ceil(total / defaultLimit);
-
+  
     const room = plainToClass(RoomResponseDto, result);
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,
-      pageSize: +qs.limit || 10,
+      pageSize: take,
       pages: totalPages,
-      total: total,
+      total,
     });
-
-    // Tạo RoomsResponseDto
-    const roomsResponseDto = plainToClass(RoomsResponseDto, {
+  
+    return plainToClass(RoomsResponseDto, {
       meta: metaResponseDto,
       rooms: room,
     });
-    return roomsResponseDto
   }
+  
 
   async getRoomAvailableNow(qs: any) {
     const now = new Date();
-    const take = +qs.limit || 10;
-    const skip = (+qs.currentPage - 1) * (+qs.limit) || 0;
-
     const totalItems = await this.roomRepository
       .createQueryBuilder('room')
       .leftJoin('room.bookings', 'booking')
@@ -240,6 +202,11 @@ export class RoomService {
         { now }
       )
       .getCount();
+  
+    const take = +qs.limit || totalItems;
+    const skip = (+qs.currentPage - 1) * take || 0;
+    const totalPages = Math.ceil(totalItems / take);
+  
     const availableRooms = await this.roomRepository
       .createQueryBuilder('room')
       .leftJoin('room.bookings', 'booking')
@@ -250,21 +217,18 @@ export class RoomService {
       .take(take)
       .skip(skip)
       .getMany();
-    const totalPages = Math.ceil(totalItems / take);
+  
     const room = plainToClass(RoomResponseDto, availableRooms);
-    // Trả về kết quả
     const metaResponseDto = plainToClass(MetaResponseDto, {
       current: +qs.currentPage || 1,
-      pageSize: +qs.limit || 10,
+      pageSize: take,
       pages: totalPages,
       total: totalItems,
     });
-
-    // Tạo RoomsResponseDto
-    const roomsResponseDto = plainToClass(RoomsResponseDto, {
+  
+    return plainToClass(RoomsResponseDto, {
       meta: metaResponseDto,
       rooms: room,
     });
-    return roomsResponseDto;
   }
 }
