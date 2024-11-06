@@ -142,40 +142,44 @@ export class PaymentService {
   async getRevenueByDay(startDate: string) {
     const payments = await this.paymentRepository
       .createQueryBuilder('payment')
-      .select("DATE(payment.paymentDate)", "date")  // Nhóm theo ngày
-      .addSelect("SUM(payment.amount)", "totalRevenue")  // Tính tổng doanh thu cho mỗi ngày
+      .select("DATE(payment.paymentDate)", "date")  // Group by day
+      .addSelect("SUM(payment.amount)", "totalRevenue")  // Sum revenue for each day
       .where("payment.paymentDate BETWEEN :startDate AND :endDate", {
         startDate: new Date(startDate),
         endDate: new Date(),
       })
-      .groupBy("DATE(payment.paymentDate)")  // Nhóm kết quả theo ngày
-      .getRawMany();  // Trả về kết quả thô
-
+      .groupBy("DATE(payment.paymentDate)")  // Group by day
+      .orderBy("DATE(payment.paymentDate)", "ASC")  // Order by date in ascending order
+      .getRawMany();
+  
     return payments;
   }
-
+  
   async getRevenueByMonth(year: number) {
     const payments = await this.paymentRepository
       .createQueryBuilder('payment')
-      .select("DATE_FORMAT(payment.paymentDate, '%Y-%m')", "month")  // Nhóm theo tháng
-      .addSelect("SUM(payment.amount)", "totalRevenue")  // Tính tổng doanh thu cho mỗi tháng
+      .select("DATE_FORMAT(payment.paymentDate, '%Y-%m')", "month")  // Group by month
+      .addSelect("SUM(payment.amount)", "totalRevenue")  // Sum revenue for each month
       .where("YEAR(payment.paymentDate) = :year", { year })
-      .groupBy("DATE_FORMAT(payment.paymentDate, '%Y-%m')")  // Nhóm kết quả theo tháng
-      .getRawMany();  // Trả về kết quả thô
-
+      .groupBy("DATE_FORMAT(payment.paymentDate, '%Y-%m')")  // Group by month
+      .orderBy("DATE_FORMAT(payment.paymentDate, '%Y-%m')", "ASC")  // Order by month in ascending order
+      .getRawMany();
+  
     return payments;
   }
-
+  
   async getRevenueByYear() {
     const payments = await this.paymentRepository
       .createQueryBuilder('payment')
-      .select("YEAR(payment.paymentDate)", "year")  // Nhóm theo năm
-      .addSelect("SUM(payment.amount)", "totalRevenue")  // Tính tổng doanh thu cho mỗi năm
-      .groupBy("YEAR(payment.paymentDate)")  // Nhóm kết quả theo năm
-      .getRawMany();  // Trả về kết quả thô
-
+      .select("YEAR(payment.paymentDate)", "year")  // Group by year
+      .addSelect("SUM(payment.amount)", "totalRevenue")  // Sum revenue for each year
+      .groupBy("YEAR(payment.paymentDate)")  // Group by year
+      .orderBy("YEAR(payment.paymentDate)", "ASC")  // Order by year in ascending order
+      .getRawMany();
+  
     return payments;
   }
+  
 
   async findOne(id: string) {
     return this.paymentRepository.findOne(
