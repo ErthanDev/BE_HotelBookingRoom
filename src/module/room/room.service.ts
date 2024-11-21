@@ -9,6 +9,7 @@ import { BookingStatus } from 'src/enum/bookingStatus.enum';
 import { plainToClass } from 'class-transformer';
 import { MetaResponseDto } from 'src/core/meta-response.dto';
 import { RoomResponseDto, RoomsResponseDto } from './dto/room-response.dto';
+import moment from 'moment-timezone';
 
 @Injectable()
 export class RoomService {
@@ -111,17 +112,37 @@ export class RoomService {
   }
 
 
-  async getAvailableRooms(startTime: Date, endTime: Date, numberOfPeople: number, sortDirection: 'ASC' | 'DESC', qs: any) {
+  async getAvailableRooms(
+    startTime: Date | string,
+    endTime: Date | string,
+    numberOfPeople: number,
+    sortDirection: 'ASC' | 'DESC',
+    qs: any
+  ) {
+    // Đảm bảo startTime và endTime là đối tượng Date
+    if (!(startTime instanceof Date)) {
+      startTime = new Date(startTime);
+    }
+    if (!(endTime instanceof Date)) {
+      endTime = new Date(endTime);
+    }
+  
+    // Chuyển đổi sang UTC
+    const utcStartTime = startTime.toISOString();
+    const utcEndTime = endTime.toISOString();
+    console.log(utcStartTime, utcEndTime);
     const totalItems = await this.roomRepository
       .createQueryBuilder('room')
       .leftJoinAndSelect('room.bookings', 'booking')
       .leftJoinAndSelect('room.typeRoom', 'typeRoom')
       .where(
         '(booking.startTime IS NULL OR (booking.endTime <= :startTime OR booking.startTime >= :endTime))',
-        { startTime, endTime }
+        { startTime: utcStartTime, endTime: utcEndTime } // Truyền UTC
       )
       .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
-      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Paid] })
+      .andWhere('booking.bookingStatus NOT IN (:...statuses)', {
+        statuses: [BookingStatus.Paid],
+      })
       .getCount();
   
     const take = +qs.limit || totalItems;
@@ -134,10 +155,12 @@ export class RoomService {
       .leftJoinAndSelect('room.typeRoom', 'typeRoom')
       .where(
         '(booking.startTime IS NULL OR (booking.endTime <= :startTime OR booking.startTime >= :endTime))',
-        { startTime, endTime }
+        { startTime: utcStartTime, endTime: utcEndTime } // Truyền UTC
       )
       .andWhere('typeRoom.maxPeople >= :numberOfPeople', { numberOfPeople })
-      .orWhere('booking.bookingStatus NOT IN (:...statuses)', { statuses: [BookingStatus.Paid] })
+      .andWhere('booking.bookingStatus NOT IN (:...statuses)', {
+        statuses: [BookingStatus.Paid],
+      })
       .orderBy('room.pricePerDay', sortDirection)
       .take(take)
       .skip(skip)
@@ -156,6 +179,7 @@ export class RoomService {
       rooms: room,
     });
   }
+  
 
   async getRoomByTypeRoomId(typeRoomId: string, qs: any) {
     const typeRoom = await this.typeRoomRepository.findOne({

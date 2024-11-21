@@ -37,6 +37,7 @@
     "handlebars": "^4.7.8",
     "helmet": "^8.0.0",
     "moment": "^2.30.1",
+    "moment-timezone": "^0.5.46",
     "ms": "^2.1.3",
     "mysql2": "^3.11.3",
     "nestjs-vnpay": "^0.1.0",
