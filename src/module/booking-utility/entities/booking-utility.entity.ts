@@ -12,11 +12,11 @@ export class BookingUtility {
     @Column()
     quantity: number;
 
-    @ManyToOne(() => Booking, booking => booking.bookingUtilities)
+    @ManyToOne(() => Booking, booking => booking.bookingUtilities, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'bookingId' })
     booking: Booking;
-
-    @ManyToOne(() => Utility, utility => utility.bookingUtilities)
+    
+    @ManyToOne(() => Utility, utility => utility.bookingUtilities, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'utilityId' })
     utility: Utility;
 }
