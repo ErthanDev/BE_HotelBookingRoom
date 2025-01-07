@@ -10,7 +10,6 @@ import { BookingStatus } from 'src/enum/bookingStatus.enum';
 import { MailService } from 'src/module/mail/mail.service';
 import { CreateMailDto } from 'src/module/mail/dto/create-mail.dto';
 import { PaymentStatus } from 'src/enum/paymentStatus.enum';
-import * as moment from 'moment';
 
 
 @Injectable()

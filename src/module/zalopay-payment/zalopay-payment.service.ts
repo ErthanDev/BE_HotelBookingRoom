@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import * as moment from "moment";
 import axios from 'axios';
 import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
@@ -8,6 +7,7 @@ import { CreatePaymentDto } from 'src/module/payment/dto/create-payment.dto';
 import { PaymentMethod } from 'src/enum/paymentMethod.enum';
 import { PaymentStatus } from 'src/enum/paymentStatus.enum';
 import { MailService } from '../mail/mail.service';
+const moment = require('moment');
 
 @Injectable()
 export class ZalopayPaymentService {

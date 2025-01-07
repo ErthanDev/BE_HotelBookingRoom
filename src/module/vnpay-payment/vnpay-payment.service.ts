@@ -2,14 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { VnpayService } from 'nestjs-vnpay';
 import { InpOrderAlreadyConfirmed, IpnFailChecksum, IpnInvalidAmount, IpnOrderNotFound, IpnSuccess, IpnUnknownError, VerifyReturnUrl, VnpLocale } from 'vnpay';
-import * as moment from "moment";
 import { CreatePaymentDto } from 'src/module/payment/dto/create-payment.dto';
 import { PaymentMethod } from 'src/enum/paymentMethod.enum';
 import { PaymentService } from 'src/module/payment/payment.service';
 import { PaymentStatus } from 'src/enum/paymentStatus.enum';
 import { MailService } from '../mail/mail.service';
 import { CreateMailDto } from '../mail/dto/create-mail.dto';
-
+const moment = require('moment');
 @Injectable()
 export class VnpayPaymentService {
   constructor(
