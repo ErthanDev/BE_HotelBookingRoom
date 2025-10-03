@@ -3,13 +3,14 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as cookieParser from 'cookie-parser';
 import { TransformInterceptor } from './core/transform.interceptor';
 import { JwtAuthGuard } from './module/auth/guard/jwt-auth.guard';
 import { RolesGuard } from './module/auth/guard/roles.guard';
 import helmet from 'helmet';
 import { join } from 'path';
 import * as passport from 'passport';
+const cookieParser = require('cookie-parser');
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
